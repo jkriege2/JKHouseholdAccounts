@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>JKHouseholdAccounts.ico</file>
+    </qresource>
+</RCC>
