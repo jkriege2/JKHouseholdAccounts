@@ -1,0 +1,73 @@
+version: 0.{build}-{branch}
+
+image:
+    - Visual Studio 2017
+
+environment:
+  global:
+    QTVER: 5.11
+    ARCH: x86
+    QMAKESPEC: win32-msvc
+    MAKETOOL: jom
+    VSVER: 0
+    JOMDIR: C:\Qt\Tools\QtCreator\bin
+    MINGWDIR: C:\Qt\Tools\mingw530_32
+
+  matrix:
+    - QTABI: msvc2017_64
+      ARCH: x64
+      VSVER: 2017
+    - QTABI: msvc2015
+      VSVER: 14
+    - QTABI: mingw53_32
+      QMAKESPEC: win32-g++
+      MAKETOOL: mingw32-make
+
+skip_tags: true
+
+build:
+  parallel: true
+  verbosity: detailed
+
+configuration:
+  - release
+  - debug
+
+
+matrix:
+  fast_finish: true
+
+install:
+  - IF %VSVER% GTR 14 (
+        call "C:\Program Files (x86)\Microsoft Visual Studio\%VSVER%\Community\VC\Auxiliary\Build\vcvarsall.bat" %ARCH%
+    ) ELSE (
+        IF %VSVER% GTR 0 (
+            call "C:\Program Files (x86)\Microsoft Visual Studio "%VSVER%".0\VC\vcvarsall.bat" %ARCH%
+        ) ELSE (
+            set "PATH=%MINGWDIR%\bin;%PATH%"
+        )
+    )
+  - set PATH=C:\Qt\%QTVER%\%QTABI%\bin;%JOMDIR%;%PATH%
+  - echo "BUILD ID Qt%QTVER%_%QTABI%_%APPVEYOR_BUILD_VERSION%_%CONFIGURATION%"
+
+build_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - dir
+  # create folder for an out-of-source-tree build: "c:\projects\build"
+  - cd.. 
+  - mkdir build
+  - cd build
+  # generate build script
+  - >
+    cmake %APPVEYOR_BUILD_FOLDER%\src
+    -G "%generator%" 
+  # build
+  - cmake --build . --target ALL_BUILD --config %configuration% -- /nologo /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  # install
+  #- cmake --build . --target INSTALL --config %configuration% -- /nologo
+  # package (with cpack)
+  #- cmake --build ./build --target PACKAGE --config %configuration% -- /nologo
+
+artifacts:
+   - path: "*"
+     name: JKHouseHoldAccounts %QTVER%%QTABI%
