@@ -6,22 +6,22 @@ image:
 environment:
   global:
     QTVER: 5.11
-    ARCH: x86
-    QMAKESPEC: win32-msvc
+    ARCH: x64
+    QMAKESPEC: win64-msvc
     MAKETOOL: jom
     VSVER: 0
     JOMDIR: C:\Qt\Tools\QtCreator\bin
     MINGWDIR: C:\Qt\Tools\mingw530_32
 
   matrix:
+    #- QTABI: mingw53_32
+    #  QMAKESPEC: win32-g++
+    #  MAKETOOL: mingw32-make
+    #  GENERATOR: "MinGW Makefiles" 
     - QTABI: msvc2017_64
       ARCH: x64
       VSVER: 2017
-      generator: "Visual Studio 15 2017" 
-    - QTABI: mingw53_32
-      QMAKESPEC: win32-g++
-      MAKETOOL: mingw32-make
-      generator: "MinGW Makefiles" 
+      GENERATOR: "Visual Studio 15 2017" 
 
 skip_tags: true
 
@@ -32,10 +32,6 @@ build:
 configuration:
   - release
   - debug
-
-
-matrix:
-  fast_finish: true
 
 install:
   - IF %VSVER% GTR 14 (
@@ -51,6 +47,7 @@ install:
   - echo "BUILD ID Qt%QTVER%_%QTABI%_%APPVEYOR_BUILD_VERSION%_%CONFIGURATION%"
 
 build_script:
+  - dir C:\Qt\%QTVER%
   - cd %APPVEYOR_BUILD_FOLDER%
   - dir
   # create folder for an out-of-source-tree build: "c:\projects\build"
@@ -59,8 +56,8 @@ build_script:
   - cd build
   # generate build script
   - >
-    cmake %APPVEYOR_BUILD_FOLDER%\src
-    -G "%generator%" 
+    cmake %APPVEYOR_BUILD_FOLDER%
+    -G "%GENERATOR%" 
   # build
   - cmake --build . --target ALL_BUILD --config %configuration% -- /nologo /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   # install
