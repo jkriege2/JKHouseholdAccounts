@@ -17,11 +17,11 @@ environment:
     - QTABI: msvc2017_64
       ARCH: x64
       VSVER: 2017
-    - QTABI: msvc2015
-      VSVER: 14
+      generator: "Visual Studio 15 2017" 
     - QTABI: mingw53_32
       QMAKESPEC: win32-g++
       MAKETOOL: mingw32-make
+      generator: "MinGW Makefiles" 
 
 skip_tags: true
 
