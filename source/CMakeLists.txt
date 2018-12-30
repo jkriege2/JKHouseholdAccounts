@@ -48,6 +48,8 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32
 )
 target_link_libraries(${CMAKE_PROJECT_NAME}
   Qt5::Widgets
+  Qt5::PrintSupport
+  Qt5::Sql
 )
 
 if (UNIX)

@@ -17,27 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "main_window.h"
-#include "moc_main_window.cpp"
-#include "defines.h"
+#ifndef JKHADATABASETOOLS_H
+#define JKHADATABASETOOLS_H
 
-/**
- * Constructor
- */
-MainWindow::MainWindow(QMainWindow* parent)
-  : QMainWindow(parent)
-{
-    m_db=new JKHADatabase(this);
+#include <QtSql>
+#include <QObject>
+#include <QSqlTableModel>
 
-    m_db->createNew("c:\\temp\\test.sqlite");
+class JKHADatabase: public QObject {
+    Q_OBJECT
+public:
+    JKHADatabase(QObject* parent);
+    virtual ~JKHADatabase();
+
+    QSqlTableModel *getOverviewModel();
+
+    /** \brief create a new database, stored in the file \a filename */
+    void createNew(const QString& filename);
+
+protected:
+    QSqlTableModel* m_overviewModel;
+    QSqlDatabase m_db;
+    QSqlQuery m_query;
+    void createModels();
+};
 
 
-    this->ui.setupUi(this);
-    this->ui.label->setText(QString(PROJECT_LONGNAME)+" "+QString(PROJECT_VERSION));
-    this->ui.tableView->setModel(m_db->getOverviewModel());
-}
-
-void MainWindow::on_btnAdd_clicked() {
-    m_db->getOverviewModel()->insertRow(m_db->getOverviewModel()->rowCount());
-    //qDebug()<<m_db->getOverviewModel()->submit();
-}
+#endif // JKHADATABASETOOLS_H

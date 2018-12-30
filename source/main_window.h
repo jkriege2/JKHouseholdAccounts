@@ -22,6 +22,7 @@
 
 #include <QtGui>
 #include "ui_main_window.h"
+#include "jkhadatabasetools.h"
 
 /**
  * Main window class for the application
@@ -33,8 +34,12 @@ class MainWindow : public QMainWindow
   public:
     MainWindow(QMainWindow* parent = 0);
 
-  private:
+protected slots:
+    void on_btnAdd_clicked();
+private:
     Ui::MainWindow ui;
+
+    JKHADatabase* m_db;
 };
 
 #endif
