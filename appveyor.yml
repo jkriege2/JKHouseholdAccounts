@@ -12,16 +12,21 @@ environment:
     VSVER: 0
     JOMDIR: C:\Qt\Tools\QtCreator\bin
     MINGWDIR: C:\Qt\Tools\mingw530_32
+    nsis: C:\Program Files (x86)\NSIS
+    makensis: C:\Program Files (x86)\NSIS\makensis.exe
 
   matrix:
-    #- QTABI: mingw53_32
-    #  QMAKESPEC: win32-g++
-    #  MAKETOOL: mingw32-make
-    #  GENERATOR: "MinGW Makefiles" 
+    - QTABI: mingw53_32
+      QMAKESPEC: win32-g++
+      MAKETOOL: mingw32-make
+      ARCH: x86
+      GENERATOR: "MinGW Makefiles"
+      BUILDTYPE: MINGW      
     - QTABI: msvc2017_64
       ARCH: x64
       VSVER: 2017
-      GENERATOR: "Visual Studio 15 2017" 
+      GENERATOR: "Visual Studio 15 2017 Win64" 
+      BUILDTYPE: VS      
 
 skip_tags: true
 
@@ -34,6 +39,11 @@ configuration:
   - debug
 
 install:
+  - dir C:\Qt
+  - dir C:\Qt\%QTVER%
+  - dir C:\Qt\Tools
+  - dir "C:\Program Files (x86)"
+  - dir "C:\Program Files"
   - IF %VSVER% GTR 14 (
         call "C:\Program Files (x86)\Microsoft Visual Studio\%VSVER%\Community\VC\Auxiliary\Build\vcvarsall.bat" %ARCH%
     ) ELSE (
@@ -47,24 +57,39 @@ install:
   - echo "BUILD ID Qt%QTVER%_%QTABI%_%APPVEYOR_BUILD_VERSION%_%CONFIGURATION%"
 
 build_script:
-  - dir C:\Qt\%QTVER%
+  - echo "Qt____________%QTVER%_%QTABI%__"
+  - echo "Generator_____%GENERATOR%__"
+  - echo "configuation__%configuration%__"
   - cd %APPVEYOR_BUILD_FOLDER%
   - dir
   # create folder for an out-of-source-tree build: "c:\projects\build"
-  - cd.. 
   - mkdir build
   - cd build
   # generate build script
-  - >
-    cmake %APPVEYOR_BUILD_FOLDER%
-    -G "%GENERATOR%" 
-  # build
-  - cmake --build . --target ALL_BUILD --config %configuration% -- /nologo /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  # git bash conflicts with MinGW makefiles
+  - ps: if ($env:generator -eq "MinGW Makefiles") {
+            $env:path = $env:path.replace("C:\Program Files\Git\usr\bin;", "") }
+  - cmake %APPVEYOR_BUILD_FOLDER% -G "%GENERATOR%" 
+  - dir
+  - ps: if ($env:generator -eq "MinGW Makefiles") {
+            cmake --build . --target all --config %configuration% --
+        } else {
+            cmake --build . --target ALL_BUILD --config %configuration% --  /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
+  #  /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - dir 
+  - echo "BUILD DONE!"
   # install
-  #- cmake --build . --target INSTALL --config %configuration% -- /nologo
+  - ps: if ($env:generator -eq "MinGW Makefiles") {
+            cmake --build . --target install --config %configuration% --
+        } else {
+            cmake --build . --target INSTALL --config %configuration% --  /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
   # package (with cpack)
-  #- cmake --build ./build --target PACKAGE --config %configuration% -- /nologo
+  #- cmake --build ./build --target PACKAGE --config %configuration% -- 
+  - dir 
+  - echo "INSTALL DONE!"
 
 artifacts:
-   - path: "*"
-     name: JKHouseHoldAccounts %QTVER%%QTABI%
+   - path: "**/*"
+     name: JKHouseHoldAccountsALL %QTVER%%QTABI%%configuration%
+   - path: "build/dist/**/*"
+     name: JKHouseHoldAccounts %QTVER%%QTABI%%configuration%
