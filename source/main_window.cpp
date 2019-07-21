@@ -20,6 +20,7 @@
 #include "main_window.h"
 #include "moc_main_window.cpp"
 #include "defines.h"
+#include "dlgaccountaddexpense.h"
 
 /**
  * Constructor
@@ -38,6 +39,10 @@ MainWindow::MainWindow(QMainWindow* parent)
 }
 
 void MainWindow::on_btnAdd_clicked() {
-    m_db->getOverviewModel()->insertRow(m_db->getOverviewModel()->rowCount());
+    DlgAccountAddExpense dlg(m_db->getCurrency());
+    if (dlg.exec()==QDialog::Accepted) {
+        m_db->addExpense(dlg.getDate(), dlg.getAmount(), dlg.getPayee(), dlg.getDescription(), true);
+    }
+    //m_db->getOverviewModel()->insertRow(m_db->getOverviewModel()->rowCount());
     //qDebug()<<m_db->getOverviewModel()->submit();
 }

@@ -34,6 +34,12 @@ public:
 
     /** \brief create a new database, stored in the file \a filename */
     void createNew(const QString& filename);
+    /** \brief add a new expense to the opened database */
+    void addExpense(const QDate& date, double amount, const QString& payee, const QString& description, bool autorefresh=false);
+    /** \brief read the current currency from the SETTINGS-table in the current database */
+    QString getCurrency() const;
+
+    void refreshModels();
 
 protected:
     QSqlTableModel* m_overviewModel;

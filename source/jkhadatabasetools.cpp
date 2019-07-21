@@ -55,18 +55,47 @@ void JKHADatabase::createNew(const QString &filename)
 
     QSqlQuery query(m_db);
     if (!dbexists) {
-        query.exec("create table expenses (id int primary key, "
-                   "date date, payee varchar(200), amount money, description varchar(200))");
+        query.exec("CREATE TABLE expenses (id INTEGER PRIMARY KEY AUTOINCREMENT , "
+                   "date DATE, payee VARCHAR(200), amount MONEY, description VARCHAR(200))");
         qDebug()<<query.lastQuery()<<"\n  --> "<<query.lastError();
-        query.exec("insert into expenses values(1, 'Dec-24-2018', 'REWE', 49.99, 'Wocheneinkauf')");
+        query.exec("INSERT INTO expenses VALUES(null, 'Dec-24-2018', 'REWE', 49.99, 'Wocheneinkauf')");
         qDebug()<<query.lastQuery()<<"\n  --> "<<query.lastError();
-        query.exec("insert into expenses values(2, 'Dec-31-2018', 'REWE', 15.88, 'Wocheneinkauf')");
+        query.exec("INSERT INTO expenses VALUES(null, 'Dec-31-2018', 'REWE', 15.88, 'Wocheneinkauf')");
         qDebug()<<query.lastQuery()<<"\n  --> "<<query.lastError();
+        query.exec("CREATE TABLE settings (key VARCHAR(100) PRIMARY KEY, value VARCHAR(200))");
+        query.exec("INSERT INTO  settings VALUES('CURRENCY', 'EUR')");
     }
 
     createModels();
 
 
+}
+
+void JKHADatabase::addExpense(const QDate &date, double amount, const QString &payee, const QString &description, bool autorefresh)
+{
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO expenses (id, date, amount, payee, description)"
+               " VALUES (null, :date, :amount, :payee, :description)");
+    query.bindValue(":date", date);
+    query.bindValue(":amount", amount);
+    query.bindValue(":payee", payee);
+    query.bindValue(":description", description);
+    query.exec();
+    qDebug()<<query.lastQuery()<<"\n  --> "<<query.lastError();
+    if (autorefresh) refreshModels();
+}
+
+QString JKHADatabase::getCurrency() const
+{
+    QSqlQuery query(m_db);
+    query.exec("SELECT value INTO settings WHERE key=='CURRENCY'");
+    if (query.isValid()) return query.value(0).toString();
+    else return tr("EUR");
+}
+
+void JKHADatabase::refreshModels()
+{
+    m_overviewModel->select();
 }
 
 void JKHADatabase::createModels()
