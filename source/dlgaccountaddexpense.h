@@ -2,6 +2,8 @@
 #define DLGACCOUNTADDEXPENSE_H
 
 #include <QDialog>
+#include "jkhadatabasetools.h"
+#include <QCloseEvent>
 
 namespace Ui {
     class DlgAccountAddExpense;
@@ -12,16 +14,15 @@ class DlgAccountAddExpense : public QDialog
         Q_OBJECT
 
     public:
-        explicit DlgAccountAddExpense(const QString &currency, QWidget *parent = nullptr);
+        explicit DlgAccountAddExpense(JKHADatabase* db, QWidget *parent = nullptr);
         ~DlgAccountAddExpense();
 
-        QDate getDate() const;
-        double getAmount() const;
-        QString getPayee() const;
-        QString getDescription() const;
-
+    protected slots:
+        void addRecords();
+        void showMore(bool show);
 
     private:
+        JKHADatabase* m_db;
         Ui::DlgAccountAddExpense *ui;
 };
 

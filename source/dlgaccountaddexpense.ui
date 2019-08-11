@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgAccountAddExpense</class>
- <widget class="QDialog" name="DlgAccountAddExpense">
+ <class>labDate</class>
+ <widget class="QDialog" name="labDate">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>446</width>
-    <height>208</height>
+    <height>246</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Add Expense ...</string>
   </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="labDate_2">
      <property name="text">
       <string>Date:</string>
      </property>
@@ -42,7 +45,7 @@
     </layout>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="labAmount">
      <property name="text">
       <string>Amount:</string>
      </property>
@@ -97,30 +100,48 @@
     </widget>
    </item>
    <item row="3" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Payer:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QComboBox" name="cmbPayer">
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Category:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QComboBox" name="cmbCategory">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
       <string>Description:</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QComboBox" name="cmbDescription">
-     <property name="editable">
-      <bool>true</bool>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="edtDescription">
+     <property name="maxLength">
+      <number>200</number>
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
+   <item row="6" column="1">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -133,47 +154,62 @@
      </property>
     </spacer>
    </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>edtDate</tabstop>
   <tabstop>spinAmount</tabstop>
   <tabstop>cmbPayee</tabstop>
-  <tabstop>cmbDescription</tabstop>
+  <tabstop>cmbPayer</tabstop>
+  <tabstop>cmbCategory</tabstop>
+  <tabstop>edtDescription</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>DlgAccountAddExpense</receiver>
+   <receiver>labDate</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
-     <y>274</y>
+     <y>250</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>DlgAccountAddExpense</receiver>
+   <receiver>labDate</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
-     <y>274</y>
+     <y>250</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>showMore(bool)</slot>
+ </slots>
 </ui>

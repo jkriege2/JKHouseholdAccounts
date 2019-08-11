@@ -1,6 +1,6 @@
 /**
  * Project: JKHouseholdAccounts (https://github.com/jkriege2/JKHouseholdAccounts)
- * Copyright (c) 2018, Jan Krieger <jan@jkrieger.de>
+ * Copyright (c) 2018-2019, Jan Krieger <jan@jkrieger.de>
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,28 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "main_window.h"
-#include "moc_main_window.cpp"
-#include "defines.h"
-#include "dlgaccountaddexpense.h"
+#ifndef JKCPPTOOLS_H
+#define JKCPPTOOLS_H
 
-/**
- * Constructor
- */
-MainWindow::MainWindow(QMainWindow* parent)
-  : QMainWindow(parent)
-{
-    m_db=new JKHADatabase(this);
-
-    m_db->createNew("c:\\temp\\test.sqlite");
-
-
-    this->ui.setupUi(this);
-    this->ui.label->setText(QString(PROJECT_LONGNAME)+" "+QString(PROJECT_VERSION));
-    m_db->assignOverviewTable(ui.tableView);
+namespace jkdetail { //adapt to your "private" namespace
+    template <typename F>
+    struct FinalAction {
+        FinalAction(F f) : clean_{f} {}
+       ~FinalAction() { if(enabled_) clean_(); }
+        void disable() { enabled_ = false; };
+      private:
+        F clean_;
+        bool enabled_{true}; };
 }
 
-void MainWindow::on_btnAdd_clicked() {
-    DlgAccountAddExpense dlg(m_db, this);
-    dlg.exec();
-}
+template <typename F>
+jkdetail::FinalAction<F> jkfinally(F f) { return jkdetail::FinalAction<F>(f); }
+
+
+
+#endif

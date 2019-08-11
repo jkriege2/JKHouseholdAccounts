@@ -1,13 +1,21 @@
 #include "dlgaccountaddexpense.h"
 #include "ui_dlgaccountaddexpense.h"
 
-DlgAccountAddExpense::DlgAccountAddExpense(const QString& currency, QWidget *parent) :
+
+DlgAccountAddExpense::DlgAccountAddExpense(JKHADatabase* db, QWidget *parent) :
     QDialog(parent),
+    m_db(db),
     ui(new Ui::DlgAccountAddExpense)
 {
     ui->setupUi(this);
-    ui->labCurrency->setText(currency);
+    ui->labCurrency->setText(m_db->getCurrency());
     ui->edtDate->setDate(QDate::currentDate());
+    ui->cmbPayee->addItems(m_db->getPayees());
+    ui->cmbPayer->addItems(m_db->getPayers());
+    ui->cmbCategory->addItems(m_db->getCategories());
+    ui->cmbPayee->setCurrentText("");
+    ui->cmbCategory->setCurrentText("");
+    connect(this, &QDialog::accepted, this, &DlgAccountAddExpense::addRecords);
 }
 
 DlgAccountAddExpense::~DlgAccountAddExpense()
@@ -15,22 +23,18 @@ DlgAccountAddExpense::~DlgAccountAddExpense()
     delete ui;
 }
 
-QDate DlgAccountAddExpense::getDate() const
+void DlgAccountAddExpense::addRecords()
 {
-    return ui->edtDate->date();
+    m_db->addExpense(ui->edtDate->date(),
+                     ui->cmbPayee->currentText(),
+                     ui->cmbPayer->currentText(),
+                     ui->spinAmount->value(),
+                     ui->cmbCategory->currentText(),
+                     ui->edtDescription->text(), true);
+
 }
 
-double DlgAccountAddExpense::getAmount() const
+void DlgAccountAddExpense::showMore(bool show)
 {
-    return ui->spinAmount->value();
-}
 
-QString DlgAccountAddExpense::getPayee() const
-{
-    return ui->cmbPayee->currentText();
-}
-
-QString DlgAccountAddExpense::getDescription() const
-{
-    return ui->cmbDescription->currentText();
 }

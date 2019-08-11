@@ -23,26 +23,87 @@
 #include <QtSql>
 #include <QObject>
 #include <QSqlTableModel>
+#include <QSqlQueryModel>
+#include <QSqlRelationalTableModel>
+#include <QSqlRelationalDelegate>
+#include <QStringList>
 
 class JKHADatabase: public QObject {
     Q_OBJECT
 public:
     JKHADatabase(QObject* parent);
     virtual ~JKHADatabase();
-
-    QSqlTableModel *getOverviewModel();
+    /** \brief populates an item view for the overview table with the required models and delegates */
+    void assignOverviewTable(QAbstractItemView* view);
 
     /** \brief create a new database, stored in the file \a filename */
     void createNew(const QString& filename);
     /** \brief add a new expense to the opened database */
-    void addExpense(const QDate& date, double amount, const QString& payee, const QString& description, bool autorefresh=false);
+    void addExpense(const QDate& date, const QString& payee, const QString &payer, double amount, const QString &category, const QString& description, bool autorefresh=false);
+
+
+    /** \brief returns a property from the SETTINGS-table in the current database */
+    QVariant getDBProperty(const QString& property, const QVariant& defaultVal=QVariant()) const;
+    /** \brief returns a property from the SETTINGS-table in the current database */
+    int getDBPropertyInt(const QString& property, int defaultVal) const;
+    /** \brief returns a property from the SETTINGS-table in the current database */
+    bool getDBPropertyBool(const QString& property, bool defaultVal) const;
+    /** \brief returns a property from the SETTINGS-table in the current database */
+    double getDBPropertyDouble(const QString& property, double defaultVal) const;
+    /** \brief returns a property from the SETTINGS-table in the current database */
+    QString getDBPropertyString(const QString& property, const QString& defaultVal) const;
+    /** \brief stores a property from the SETTINGS-table in the current database */
+    void setDBProperty(const QString& property, double value);
+    /** \brief stores a property in the SETTINGS-table in the current database */
+    void setDBProperty(const QString& property, bool value);
+    /** \brief stores a property in the SETTINGS-table in the current database */
+    void setDBProperty(const QString& property, int value);
+    /** \brief stores a property in the SETTINGS-table in the current database */
+    void setDBProperty(const QString& property, const QString& value);
+    /** \brief stores a property in the SETTINGS-table in the current database */
+    void setDBProperty(const QString& property, const char* value);
     /** \brief read the current currency from the SETTINGS-table in the current database */
     QString getCurrency() const;
 
+
+    /** \brief returns the categories list from the current database */
+    QStringList getCategories() const;
+    /** \brief ensures existence of a category to the categories list from the current database */
+    int ensureCategory(const QString& name);
+    /** \brief checks whether a category exists in the categories list from the current database */
+    bool hasCategory(const QString& name, int* id=nullptr) const;
+
+    /** \brief returns the payers list from the current database */
+    QStringList getPayers() const;
+    /** \brief ensures existence of a payer to the categories list from the current database */
+    int ensurePayer(const QString& name);
+    /** \brief checks whether a payer exists in the payers list from the current database */
+    bool hasPayer(const QString& name, int* id=nullptr) const;
+
+    /** \brief returns the payees list from the current database */
+    QStringList getPayees() const;
+    /** \brief ensures existence of a payee to the categories list from the current database */
+    int ensurePayee(const QString& name);
+    /** \brief checks whether a payee exists in the payees list from the current database */
+    bool hasPayee(const QString& name, int* id=nullptr) const;
+
+
+
+    /** \brief refresh the datamodels, i.e. rerun the query for the models */
     void refreshModels();
 
 protected:
-    QSqlTableModel* m_overviewModel;
+    /** \brief stores a property */
+    void setDBProperty(const QString& property, const QVariant& value);
+    /** \brief stores the categories list from the current database */
+    void setCategories(const QStringList& categories);
+
+    static void debugLogQueryResult(QSqlQuery& q, const QString &name);
+
+    QSqlRelationalTableModel *getOverviewModel();
+
+
+    QSqlRelationalTableModel * m_overviewModel;
     QSqlDatabase m_db;
     QSqlQuery m_query;
     void createModels();
