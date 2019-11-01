@@ -119,14 +119,12 @@
         <translation>Strg+F4</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="115"/>
         <source>&amp;English</source>
-        <translation>&amp;English</translation>
+        <translation type="vanished">&amp;English</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="120"/>
         <source>&amp;German</source>
-        <translation>&amp;Deutsch</translation>
+        <translation type="vanished">&amp;Deutsch</translation>
     </message>
 </context>
 <context>

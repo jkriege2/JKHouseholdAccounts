@@ -107,16 +107,6 @@
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../source/main_window.ui" line="115"/>
-        <source>&amp;English</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../source/main_window.ui" line="120"/>
-        <source>&amp;German</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
