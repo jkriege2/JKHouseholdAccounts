@@ -30,15 +30,19 @@ MainWindow::MainWindow(QMainWindow* parent)
 {
     m_db=new JKHADatabase(this);
 
-    m_db->createNew("c:\\temp\\test.sqlite");
+    m_db->createNew(".\\test.sqlite");
 
 
     this->ui.setupUi(this);
     this->ui.label->setText(QString(PROJECT_LONGNAME)+" "+QString(PROJECT_VERSION));
-    m_db->assignOverviewTable(ui.tableView);
+    m_db->assignOverviewTable(ui.tableExpenses);
+    m_db->assignCategoriesTable(ui.tableCategories);
 }
 
-void MainWindow::on_btnAdd_clicked() {
+void MainWindow::on_btnAddExpense_clicked() {
     DlgAccountAddExpense dlg(m_db, this);
     dlg.exec();
+}
+
+void MainWindow::on_btnAddCategory_clicked() {
 }

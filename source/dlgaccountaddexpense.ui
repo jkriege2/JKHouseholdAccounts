@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>labDate</class>
- <widget class="QDialog" name="labDate">
+ <class>DlgAccountAddExpense</class>
+ <widget class="QDialog" name="DlgAccountAddExpense">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>446</width>
-    <height>246</height>
+    <width>495</width>
+    <height>251</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,8 +55,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QDoubleSpinBox" name="spinAmount">
+       <property name="styleSheet">
+        <string notr="true">color: rgb(170, 0, 0);</string>
+       </property>
        <property name="minimum">
-        <double>-1000000000.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
        <property name="maximum">
         <double>1000000000.000000000000000</double>
@@ -68,6 +71,36 @@
        <property name="text">
         <string>€</string>
        </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>24</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cmbDir">
+       <item>
+        <property name="text">
+         <string>Expense (-)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Income (+)</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>
@@ -179,7 +212,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>labDate</receiver>
+   <receiver>DlgAccountAddExpense</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -195,7 +228,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>labDate</receiver>
+   <receiver>DlgAccountAddExpense</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

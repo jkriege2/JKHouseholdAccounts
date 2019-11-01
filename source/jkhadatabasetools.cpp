@@ -20,10 +20,12 @@
 #include "jkhadatabasetools.h"
 #include <iomanip>
 #include "jkcpptools.h"
+#include "jkhamoneydelegate.h"
+#include "jkhabudgettypedelegate.h"
 
 
 JKHADatabase::JKHADatabase(QObject *parent):
-    QObject(parent), m_overviewModel(nullptr)
+    QObject(parent), m_overviewModel(nullptr), m_categoriesModel(nullptr)
 {
 }
 
@@ -31,6 +33,8 @@ JKHADatabase::~JKHADatabase()
 {
     delete m_overviewModel;
     m_overviewModel=nullptr;
+    delete m_categoriesModel;
+    m_categoriesModel=nullptr;
     m_db.commit();
     m_db.close();
 }
@@ -39,11 +43,25 @@ void JKHADatabase::assignOverviewTable(QAbstractItemView *view)
 {
     view->setModel(m_overviewModel);
     view->setItemDelegate(new QSqlRelationalDelegate(view));
+    view->setItemDelegateForColumn(4, new JKHAMoneyDelegate(this, view, true));
 }
 
 QSqlRelationalTableModel *JKHADatabase::getOverviewModel()
 {
     return m_overviewModel;
+}
+
+void JKHADatabase::assignCategoriesTable(QAbstractItemView *view)
+{
+    view->setModel(m_categoriesModel);
+    //view->setItemDelegate(new QSqlRelationalDelegate(view));
+    view->setItemDelegateForColumn(2, new JKHAMoneyDelegate(this, view, false));
+    view->setItemDelegateForColumn(3, new JKHABudgetTypeDelegate(this, view));
+}
+
+QSqlTableModel *JKHADatabase::getCategoriesModel()
+{
+    return m_categoriesModel;
 }
 
 void JKHADatabase::createNew(const QString &filename)
@@ -80,6 +98,8 @@ void JKHADatabase::createNew(const QString &filename)
         query.exec("CREATE TABLE payers (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR(200) NOT NULL)");
         debugLogQueryResult(query, "createNew");
         query.exec("CREATE TABLE payees (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR(200) NOT NULL)");
+        debugLogQueryResult(query, "createNew");
+        query.exec("CREATE TABLE categories (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR(200) NOT NULL, budget MONEY, budget_type INTEGER)");
         debugLogQueryResult(query, "createNew");
 
         setDBProperty("CURRENCY", "EUR");
@@ -134,13 +154,15 @@ QStringList JKHADatabase::getCategories() const
 }
 
 
-int JKHADatabase::ensureCategory(const QString &name)
+int JKHADatabase::ensureCategory(const QString &name, double budget, JKHABudgetType budget_type)
 {
     int id=-1;
     if (hasCategory(name, &id)) return id;
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO categories (id, name) VALUES (null, :name)");
+    query.prepare("INSERT INTO categories (id, name, budget, budget_type) VALUES (null, :name, :budget, :budget_type)");
     query.bindValue(":name", name);
+    query.bindValue(":budget", budget);
+    query.bindValue(":budget_type", static_cast<int>(budget_type));
     query.exec();
     auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "ensureCategory"));
     if (hasCategory(name, &id)) return id;
@@ -163,22 +185,6 @@ bool JKHADatabase::hasCategory(const QString &name, int *id) const
     return false;
 }
 
-void JKHADatabase::setCategories(const QStringList &categories)
-{
-    QSqlQuery query(m_db);
-    query.exec(QString("DELETE FROM categories"));
-    debugLogQueryResult(query, "setCategories");
-    if (query.isActive() && query.next()) {
-        query.prepare("INSERT INTO categories (name)"
-                      " VALUES (:name)");
-        for (const QString& c: categories) {
-            query.bindValue(":name", c);
-            query.exec();
-            debugLogQueryResult(query, "setCategories");
-        }
-
-    }
-}
 
 
 
@@ -419,6 +425,12 @@ void JKHADatabase::refreshModels()
     qDebug()<<"--   select:    "<<res;
     qDebug()<<"--   lasterror: "<<m_overviewModel->lastError();
     qDebug()<<"----------------------------------------------------------------------------------------";
+    res=m_categoriesModel->select();
+    qDebug()<<"-- UPDATE QUERY refreshModels ---";
+    qDebug()<<"--   lastQuery: "<<m_categoriesModel->query().lastQuery();
+    qDebug()<<"--   select:    "<<res;
+    qDebug()<<"--   lasterror: "<<m_categoriesModel->lastError();
+    qDebug()<<"----------------------------------------------------------------------------------------";
 }
 
 void JKHADatabase::createModels()
@@ -445,6 +457,37 @@ void JKHADatabase::createModels()
     m_overviewModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Description")); i++;
 
 
+    if (m_categoriesModel) delete m_categoriesModel;
+
+    m_categoriesModel=new QSqlTableModel(this, m_db);
+
+    m_categoriesModel->setTable("categories");
+    m_categoriesModel->setEditStrategy(QSqlTableModel::EditStrategy::OnRowChange);
+    m_categoriesModel->setSort(1, Qt::AscendingOrder);
+    i=0;
+    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("ID")); i++;
+    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Category Name")); i++;
+    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Budget")); i++;
+    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Budget Type")); i++;
+
     refreshModels();
 
+}
+
+QString JKHABudgetType2String(JKHABudgetType type)
+{
+    switch(type) {
+        case JKHABudgetType::Monthly: return "MonthlyBudget";
+        case JKHABudgetType::Yearly: return "Yearly Budget";
+    }
+    throw std::runtime_error("unknown JKHABudgetType in JKHABudgetType2String()");
+}
+
+QString JKHABudgetType2LocalString(JKHABudgetType type)
+{
+    switch(type) {
+        case JKHABudgetType::Monthly: return QObject::tr("Monthly Budget");
+        case JKHABudgetType::Yearly: return QObject::tr("Yearly Budget");
+    }
+    throw std::runtime_error("unknown JKHABudgetType in JKHABudgetType2LocalString()");
 }

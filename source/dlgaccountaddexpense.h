@@ -21,6 +21,7 @@ class DlgAccountAddExpense : public QDialog
         void addRecords();
         void showMore(bool show);
 
+        void on_cmbDir_currentIndexChanged(int index);
     private:
         JKHADatabase* m_db;
         Ui::DlgAccountAddExpense *ui;

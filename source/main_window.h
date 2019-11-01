@@ -35,7 +35,8 @@ class MainWindow : public QMainWindow
     MainWindow(QMainWindow* parent = 0);
 
 protected slots:
-    void on_btnAdd_clicked();
+    void on_btnAddExpense_clicked();
+    void on_btnAddCategory_clicked();
 private:
     Ui::MainWindow ui;
 

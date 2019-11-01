@@ -28,6 +28,14 @@
 #include <QSqlRelationalDelegate>
 #include <QStringList>
 
+enum class JKHABudgetType {
+    Monthly=0,
+    Yearly=1
+};
+
+QString JKHABudgetType2String(JKHABudgetType type);
+QString JKHABudgetType2LocalString(JKHABudgetType type);
+
 class JKHADatabase: public QObject {
     Q_OBJECT
 public:
@@ -35,6 +43,8 @@ public:
     virtual ~JKHADatabase();
     /** \brief populates an item view for the overview table with the required models and delegates */
     void assignOverviewTable(QAbstractItemView* view);
+    /** \brief populates an item view for the categories table with the required models and delegates */
+    void assignCategoriesTable(QAbstractItemView* view);
 
     /** \brief create a new database, stored in the file \a filename */
     void createNew(const QString& filename);
@@ -69,7 +79,7 @@ public:
     /** \brief returns the categories list from the current database */
     QStringList getCategories() const;
     /** \brief ensures existence of a category to the categories list from the current database */
-    int ensureCategory(const QString& name);
+    int ensureCategory(const QString& name, double budget=0.0, JKHABudgetType budget_type=JKHABudgetType::Monthly);
     /** \brief checks whether a category exists in the categories list from the current database */
     bool hasCategory(const QString& name, int* id=nullptr) const;
 
@@ -95,15 +105,15 @@ public:
 protected:
     /** \brief stores a property */
     void setDBProperty(const QString& property, const QVariant& value);
-    /** \brief stores the categories list from the current database */
-    void setCategories(const QStringList& categories);
 
     static void debugLogQueryResult(QSqlQuery& q, const QString &name);
 
     QSqlRelationalTableModel *getOverviewModel();
+    QSqlTableModel *getCategoriesModel();
 
 
     QSqlRelationalTableModel * m_overviewModel;
+    QSqlTableModel * m_categoriesModel;
     QSqlDatabase m_db;
     QSqlQuery m_query;
     void createModels();

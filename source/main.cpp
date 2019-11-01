@@ -26,15 +26,20 @@
  */
 int main(int argc, char* argv[])
 {
-  QApplication app(argc, argv);
-  app.setApplicationDisplayName(PROJECT_LONGNAME);
-  app.setApplicationName(PROJECT_LONGNAME);
-  app.setApplicationVersion(PROJECT_VERSION);
+    QStringList paths=QCoreApplication::libraryPaths();
+    paths.prepend("./");
+    paths.prepend("./plugins/");
+    paths.prepend(QFileInfo(argv[0]).filePath());
+    paths.prepend(QFileInfo(argv[0]).filePath()+"/plugins/");
+    QApplication app(argc, argv);
+    app.setApplicationDisplayName(PROJECT_LONGNAME);
+    app.setApplicationName(PROJECT_LONGNAME);
+    app.setApplicationVersion(PROJECT_VERSION);
 
 
-  MainWindow mainWindow;
+    MainWindow mainWindow;
 
-  mainWindow.show();
+    mainWindow.show();
 
-  return app.exec();
+    return app.exec();
 }
