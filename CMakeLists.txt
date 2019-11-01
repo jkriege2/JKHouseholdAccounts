@@ -66,6 +66,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5PrintSupport REQUIRED)
 find_package(Qt5Sql REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
 #find_package(Qt5Test REQUIRED)
 # Retrieve the absolute path to qmake and then use that path to find
 # the binaries

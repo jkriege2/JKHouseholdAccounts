@@ -20,6 +20,7 @@
 #include <QApplication>
 #include "main_window.h"
 #include "defines.h"
+#include "jkhasettings.h"
 
 /**
  * Entry Point
@@ -29,13 +30,22 @@ int main(int argc, char* argv[])
     QStringList paths=QCoreApplication::libraryPaths();
     paths.prepend("./");
     paths.prepend("./plugins/");
-    paths.prepend(QFileInfo(argv[0]).filePath());
-    paths.prepend(QFileInfo(argv[0]).filePath()+"/plugins/");
+    paths.prepend(QFileInfo(argv[0]).dir().absolutePath());
+    paths.prepend(QFileInfo(argv[0]).dir().absolutePath()+"/plugins/");
     QApplication app(argc, argv);
     app.setApplicationDisplayName(PROJECT_LONGNAME);
     app.setApplicationName(PROJECT_LONGNAME);
     app.setApplicationVersion(PROJECT_VERSION);
 
+    JKHASettings set;
+    QTranslator translator, translatorbase;
+    //qDebug()<<QFileInfo(argv[0]).dir().absolutePath()+"/translations/jkhouseholdaccounts_de.qm"<<": "<<QFile(QFileInfo(argv[0]).dir().absolutePath()+"/translations/jkhouseholdaccounts_de.qm").exists();
+    qDebug()<<"load "<<"jkhouseholdaccounts_" + set.getCurrentLanguage()<<": "<<
+              translator.load("jkhouseholdaccounts_" + set.getCurrentLanguage(), QFileInfo(argv[0]).dir().absolutePath()+"/translations/");
+    qDebug()<<"load "<<"qt_"+set.getCurrentLanguage()<<": "<<
+              translatorbase.load("qt_"+set.getCurrentLanguage(), QFileInfo(argv[0]).dir().absolutePath()+"/translations/");
+    app.installTranslator(&translator);
+    app.installTranslator(&translatorbase);
 
     MainWindow mainWindow;
 

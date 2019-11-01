@@ -21,6 +21,7 @@
 #include "moc_main_window.cpp"
 #include "defines.h"
 #include "dlgaccountaddexpense.h"
+#include "jkhasettings.h"
 
 /**
  * Constructor
@@ -45,4 +46,16 @@ void MainWindow::on_btnAddExpense_clicked() {
 }
 
 void MainWindow::on_btnAddCategory_clicked() {
+}
+
+void MainWindow::on_actLanguageEnglish_triggered()
+{
+    JKHASettings set;
+    set.setCurrentLanguage("en");
+}
+
+void MainWindow::on_actLanguageGerman_triggered()
+{
+    JKHASettings set;
+    set.setCurrentLanguage("de");
 }

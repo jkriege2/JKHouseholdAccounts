@@ -23,10 +23,12 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../resources/appversion.rc.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/appversion.rc)
 
 file(GLOB_RECURSE UI_FILES *.ui)
-file(GLOB_RECURSE CODE_FILES *.cpp)
+file(GLOB_RECURSE CODE_FILES *.cpp *.h)
 
 qt5_wrap_ui(UI_HEADERS ${UI_FILES})
 qt5_add_resources(RESOURCE_FILES ../resources/resources.qrc)
+FILE(GLOB TS_FILES ../translations/*.ts)
+qt5_create_translation(QM_FILES ${UI_FILES} ${CODE_FILES} ${TS_FILES})
 
 # Windows application icon
 #if (WIN32)
@@ -50,6 +52,8 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32
   ${CODE_FILES}
   ${RESOURCE_FILES}
   ${WINDOWS_RES_FILE}
+  ${QM_FILES}
+  ${TS_FILES}
 )
 target_link_libraries(${CMAKE_PROJECT_NAME}
   Qt5::Widgets
@@ -66,6 +70,9 @@ if (UNIX)
 elseif (WIN32)
   install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
+
+#install translations
+install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/translations COMPONENT translations)
 
 # install system runtime lib
 if( CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS )

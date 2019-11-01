@@ -21,8 +21,8 @@ QWidget *JKHABudgetTypeDelegate::createEditor(QWidget *parent,
 {
     QComboBox *editor = new QComboBox(parent);
     editor->setFrame(false);
-    editor->addItem(tr("Monthly Budget"));
-    editor->addItem(tr("Yearly Budget"));
+    editor->addItem(JKHABudgetType2LocalString(static_cast<JKHABudgetType>(0)));
+    editor->addItem(JKHABudgetType2LocalString(static_cast<JKHABudgetType>(1)));
 
     return editor;
 }

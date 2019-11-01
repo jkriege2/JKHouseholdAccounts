@@ -32,11 +32,13 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
   public:
-    MainWindow(QMainWindow* parent = 0);
+    MainWindow(QMainWindow* parent = nullptr);
 
 protected slots:
     void on_btnAddExpense_clicked();
     void on_btnAddCategory_clicked();
+    void on_actLanguageEnglish_triggered();
+    void on_actLanguageGerman_triggered();
 private:
     Ui::MainWindow ui;
 

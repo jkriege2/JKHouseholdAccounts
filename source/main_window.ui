@@ -83,12 +83,26 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionE_xit"/>
+    <addaction name="actExit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Settings">
+    <property name="title">
+     <string>&amp;Settings</string>
+    </property>
+    <widget class="QMenu" name="menu_Language">
+     <property name="title">
+      <string>&amp;Language</string>
+     </property>
+     <addaction name="actLanguageEnglish"/>
+     <addaction name="actLanguageGerman"/>
+    </widget>
+    <addaction name="menu_Language"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menu_Settings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionE_xit">
+  <action name="actExit">
    <property name="text">
     <string>E&amp;xit</string>
    </property>
@@ -96,11 +110,21 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actLanguageEnglish">
+   <property name="text">
+    <string notr="true">&amp;English</string>
+   </property>
+  </action>
+  <action name="actLanguageGerman">
+   <property name="text">
+    <string notr="true">&amp;Deutsch</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>actionE_xit</sender>
+   <sender>actExit</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
