@@ -1,5 +1,5 @@
-# Project: JKHouseholdAccounts (https://github.com/jkriege2/JKHouseholdAccounts)
-# Copyright (c) 2018, Jan Krieger <jan@jkrieger.de>
+# Project: SlitScanGenerator (https://github.com/jkriege2/SlitScanGenerator)
+# Copyright (c) 2018-2019, Jan Krieger <jan@jkrieger.de>
 #
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 
 !define EXE_BUILD_NAME "@CMAKE_PROJECT_NAME@.exe"
 !define EXE_INSTALL_NAME "@PROJECT_LONGNAME@.exe"
-!define APP_LONGNAME "@PROJECT_LONGNAME@"
-!define APP_VERSION "@PROJECT_VERSION@"
+!define APP_LONGNAME "@PROJECT_LONGNAME@_@PROJECT_BITNESS@bit"
+!define APP_VERSION "@PROJECT_VERSION@, @PROJECT_BITNESS@bit"
 
 !define DIST_DIR "@CMAKE_INSTALL_PREFIX@"
 !define SOURCE_DIR "@CMAKE_SOURCE_DIR@"
 
 Name "${APP_LONGNAME}"
-OutFile "${APP_LONGNAME}-${APP_VERSION}_Setup.exe"
-!define ORGANISATION_NAME "${APP_LONGNAME} Project"
-InstallDir "$PROGRAMFILES\${APP_LONGNAME}"
+OutFile "@PROJECT_LONGNAME@-@PROJECT_VERSION@-@PROJECT_BITNESS@bit_Setup.exe"
+!define ORGANISATION_NAME "Jan Krieger"
+InstallDir "$PROGRAMFILES@PROJECT_BITNESS@\${APP_LONGNAME}"
 !define APP_REGISTRY_KEY "Software\${APP_LONGNAME}"
 !define UNINSTALL_REGISTRY_KEY "${APP_LONGNAME}"
 InstallDirRegKey HKLM "${APP_REGISTRY_KEY}" ""
@@ -44,9 +44,9 @@ Var StartMenuFolder
 # Interface Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "${SOURCE_DIR}\resources\installer-icon.ico"
-#!define MUI_HEADERIMAGE_BITMAP "${SOURCE_DIR}\win\installer-header.bmp" # Size: 150x57
-#!define MUI_WELCOMEFINISHPAGE_BITMAP "${SOURCE_DIR}\win\installer-welcome.bmp" # Size: 164x314
-#!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${SOURCE_DIR}\win\installer-welcome.bmp"
+#!define MUI_HEADERIMAGE_BITMAP "${SOURCE_DIR}\installer_win\installer-header.bmp" # Size: 150x57
+#
+#!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${SOURCE_DIR}\installer_win\uninstaller-welcome.bmp"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "${SOURCE_DIR}\LICENSE.txt"
@@ -54,7 +54,7 @@ Var StartMenuFolder
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "${APP_LONGNAME}"
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKLM"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${APP_REGISTRY_KEY}"
-!define START_MENU_REGISTRY_VALUE "Start Menu Folder"
+!define START_MENU_REGISTRY_VALUE "${APP_LONGNAME} Start Menu Folder"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${START_MENU_REGISTRY_VALUE}"
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
 !insertmacro MUI_PAGE_INSTFILES
@@ -80,21 +80,21 @@ Section Install
   # App files
   File "/oname=${EXE_INSTALL_NAME}" "${DIST_DIR}\${EXE_BUILD_NAME}"
 
-  # MinGW Runtimes
-  File "${DIST_DIR}\lib*.dll"
-
-  # Qt Libraries
-  File "${DIST_DIR}\qt.conf"
-  File "${DIST_DIR}\Qt5*.dll"
+  # DLLs
+  File "${DIST_DIR}\*.dll"
 
   # Qt Plugins
-  SetOutPath "$INSTDIR\plugins\platforms"
-  File "${DIST_DIR}\plugins\platforms\*.*"
-  SetOutPath "$INSTDIR\plugins\printsupport"
-  File "${DIST_DIR}\plugins\printsupport\*.*"
-  SetOutPath "$INSTDIR\plugins\sqldrivers"
-  File "${DIST_DIR}\plugins\sqldrivers\*.*"
-
+  SetOutPath "$INSTDIR\iconengines"
+  File "${DIST_DIR}\iconengines\*.*"
+  SetOutPath "$INSTDIR\imageformats"
+  File "${DIST_DIR}\imageformats\*.*"
+  SetOutPath "$INSTDIR\platforms"
+  File "${DIST_DIR}\platforms\*.*"
+  SetOutPath "$INSTDIR\styles"
+  File "${DIST_DIR}\styles\*.*"
+  SetOutPath "$INSTDIR\translations"
+  File "${DIST_DIR}\translations\*.*"
+  
   # Uninstaller
   WriteRegStr HKLM "${APP_REGISTRY_KEY}" "" $INSTDIR
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -110,7 +110,7 @@ Section Install
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
     CreateShortCut "$SMPROGRAMS\$StartMenuFolder\${APP_LONGNAME}.lnk" "$INSTDIR\${EXE_INSTALL_NAME}"
-    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall${APP_LONGNAME}.lnk" "$INSTDIR\Uninstall.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -123,15 +123,17 @@ Section Uninstall
   # Delete all files in InstallDir
   Delete "$INSTDIR\*.*"
 
-  # Qt Plugins
-  Delete "$INSTDIR\plugins\printsupport\*.dll"
-  RMDir "$INSTDIR\plugins\printsupport"
-  Delete "$INSTDIR\plugins\platforms\*.dll"
-  RMDir "$INSTDIR\plugins\platforms"
-  Delete "$INSTDIR\plugins\sqldrivers\*.dll"
-  RMDir "$INSTDIR\plugins\sqldrivers"
-  RMDir "$INSTDIR\plugins"
-
+    # Qt Plugins
+    Delete "$INSTDIR\imageformats\*.*"
+    RMDir "$INSTDIR\imageformats"
+    Delete "$INSTDIR\platforms\*.*"
+    RMDir "$INSTDIR\platforms"
+    Delete "$INSTDIR\iconengines\*.*"
+    RMDir "$INSTDIR\iconengines"
+    Delete "$INSTDIR\styles\*.*"
+    RMDir "$INSTDIR\styles"
+    Delete "$INSTDIR\translations\*.*"
+    RMDir "$INSTDIR\translations"
   # Menu folder
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   Delete "$SMPROGRAMS\$StartMenuFolder\${APP_LONGNAME}.lnk"
