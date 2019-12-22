@@ -36,7 +36,8 @@ class MainWindow : public QMainWindow
 
 protected slots:
     void on_btnAddExpense_clicked();
-    void on_btnAddCategory_clicked();
+    void on_actCategoryAdd_triggered();
+    void on_actCategoryDelete_triggered();
     void on_actLanguageEnglish_triggered();
     void on_actLanguageGerman_triggered();
 private:

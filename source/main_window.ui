@@ -28,13 +28,13 @@
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabCategories">
+     <widget class="QTabWidget" name="mainTab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
-      <widget class="QWidget" name="tabWidgetExpended">
+      <widget class="QWidget" name="tabExpenses">
        <attribute name="title">
-        <string>Expenses</string>
+        <string>&amp;Expenses</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
@@ -49,19 +49,34 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tabBudget">
        <attribute name="title">
-        <string>Categories</string>
+        <string>&amp;Budget</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabValuables">
+       <attribute name="title">
+        <string>&amp;Valuables</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabCategories">
+       <attribute name="title">
+        <string>&amp;Settings</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QTableView" name="tableCategories"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnAddCategory">
-          <property name="text">
-           <string>Add</string>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Categories</string>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QToolBar" name="tbCategories" native="true"/>
+           </item>
+           <item>
+            <widget class="QTableView" name="tableCategories"/>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -118,6 +133,19 @@
   <action name="actLanguageGerman">
    <property name="text">
     <string notr="true">&amp;Deutsch</string>
+   </property>
+  </action>
+  <action name="actCategoryAdd">
+   <property name="text">
+    <string>Add Category</string>
+   </property>
+  </action>
+  <action name="actCategoryDelete">
+   <property name="text">
+    <string>Remove Category</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete Selected Category/Categories</string>
    </property>
   </action>
  </widget>

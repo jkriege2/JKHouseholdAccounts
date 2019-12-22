@@ -18,10 +18,13 @@
  */
 
 #include "main_window.h"
+#include <QToolBar>
 #include "moc_main_window.cpp"
 #include "defines.h"
 #include "dlgaccountaddexpense.h"
 #include "jkhasettings.h"
+#include <QInputDialog>
+#include <QMessageBox>
 
 /**
  * Constructor
@@ -36,6 +39,8 @@ MainWindow::MainWindow(QMainWindow* parent)
 
     this->ui.setupUi(this);
     this->ui.label->setText(QString(PROJECT_LONGNAME)+" "+QString(PROJECT_VERSION));
+    this->ui.tbCategories->addAction(this->ui.actCategoryAdd);
+    this->ui.tbCategories->addAction(this->ui.actCategoryDelete);
     m_db->assignOverviewTable(ui.tableExpenses);
     m_db->assignCategoriesTable(ui.tableCategories);
 }
@@ -45,7 +50,38 @@ void MainWindow::on_btnAddExpense_clicked() {
     dlg.exec();
 }
 
-void MainWindow::on_btnAddCategory_clicked() {
+void MainWindow::on_actCategoryAdd_triggered() {
+    bool ok;
+    const QString name = QInputDialog::getText(this, tr("Add Category"),
+                                      tr("New Category:"), QLineEdit::Normal,
+                                      tr("new category name"), &ok);
+    if (ok && !name.isEmpty()) {
+        m_db->ensureCategory(name);
+    }
+}
+
+void MainWindow::on_actCategoryDelete_triggered()
+{
+    QModelIndexList lst=ui.tableCategories->selectionModel()->selectedRows(0);
+
+    if (lst.size()>0) {
+        const int ret = QMessageBox::warning(this, tr("Delete Categories"),
+                                   tr("Do you really want to delete %1 categories?")+"\n\n"+
+                                   tr("Note that deleting categories may invalidate you expenses list!"),
+                                   QMessageBox::Yes | QMessageBox::No,
+                                   QMessageBox::No);
+
+        if (ret==QMessageBox::Yes) {
+            QVector<int> catIDs;
+            for (auto l: lst) {
+                catIDs.push_back(l.data().toInt());
+            }
+            for (auto c: catIDs) {
+                m_db->removeCategory(c);
+            }
+
+        }
+    }
 }
 
 void MainWindow::on_actLanguageEnglish_triggered()
