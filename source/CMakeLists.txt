@@ -19,46 +19,66 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/defines.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/defines.h)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../resources/appversion.rc.cmake
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/resources/appversion.rc.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/appversion.rc)
 
-file(GLOB_RECURSE UI_FILES *.ui)
-file(GLOB_RECURSE CODE_FILES *.cpp *.h)
+set(UI_FILES 
+        dlgaccountaddexpense.ui
+        main_window.ui
+)
+set(CODE_FILES 
+      dlgaccountaddexpense.cpp
+      dlgaccountaddexpense.h
+      main.cpp
+      main_window.cpp
+      main_window.h
+      jkhasettings.cpp
+      jkhasettings.h
+      jkhamoneydelegate.cpp
+      jkhamoneydelegate.h
+      jkhadatabasetools.cpp
+      jkhadatabasetools.h
+      jkhabudgettypedelegate.cpp
+      jkhabudgettypedelegate.h
+      jkhacategoriesdelegate.cpp
+      jkhacategoriesdelegate.h
+      jkcpptools.cpp
+      jkcpptools.h
+      jkhacategoriestreemodel.h
+      jkhacategoriestreemodel.cpp
+      jktreecombobox.h
+      jktreecombobox.cpp
+      jkhacategoriescombobox.cpp
+      jkhacategoriescombobox.h
+      )
 
-qt5_wrap_ui(UI_HEADERS ${UI_FILES})
-qt5_add_resources(RESOURCE_FILES ../resources/resources.qrc)
-FILE(GLOB TS_FILES ../translations/*.ts)
-qt5_create_translation(QM_FILES ${UI_FILES} ${CODE_FILES} ${TS_FILES})
+SET(TS_FILES
+    translations/jkhouseholdaccounts_de.ts
+    translations/jkhouseholdaccounts_en.ts
+)
 
-# Windows application icon
-#if (WIN32)
-#  set(WINDOWS_RES_FILE ${CMAKE_CURRENT_BINARY_DIR}/resources.obj)
-#  if (MSVC)
-#    add_custom_command(OUTPUT ${WINDOWS_RES_FILE}
-#      COMMAND rc.exe /fo ${WINDOWS_RES_FILE} resources.rc
-#      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/win
-#    )
-#  else()
-#    add_custom_command(OUTPUT ${WINDOWS_RES_FILE}
-#      COMMAND windres.exe resources.rc ${WINDOWS_RES_FILE}
-#      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/win
-#    )
-#  endif()
-#endif()
+SET(RESOURCE_FILES
+    resources/resources.qrc
+    sql_ressources/sql_ressources.qrc
+)
+
+qt_create_translation(QM_FILES ${UI_FILES} ${CODE_FILES} ${TS_FILES})
+
 
 
 add_executable(${CMAKE_PROJECT_NAME} WIN32
-  ${UI_HEADERS}
+  ${UI_FILES}
   ${CODE_FILES}
   ${RESOURCE_FILES}
   ${WINDOWS_RES_FILE}
   ${QM_FILES}
   ${TS_FILES}
 )
+
 target_link_libraries(${CMAKE_PROJECT_NAME}
-  Qt5::Widgets
-  Qt5::PrintSupport
-  Qt5::Sql
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::PrintSupport
+  Qt${QT_VERSION_MAJOR}::Sql
 )
 
 
@@ -79,8 +99,12 @@ if( CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS )
     install( PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION ${CMAKE_INSTALL_PREFIX} COMPONENT System )
 endif( CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS )
 
+
+include(jkha_deployqt)
+jkha_deployqt(${CMAKE_PROJECT_NAME})
+
 #use windeploy
-if (WIN32)
+if (False AND WIN32)
     set(WINDEPLOYQTOPTION "--release")
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(WINDEPLOYQTOPTION "--debug")

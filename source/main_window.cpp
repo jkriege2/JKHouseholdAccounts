@@ -42,7 +42,10 @@ MainWindow::MainWindow(QMainWindow* parent)
     this->ui.tbCategories->addAction(this->ui.actCategoryAdd);
     this->ui.tbCategories->addAction(this->ui.actCategoryDelete);
     m_db->assignOverviewTable(ui.tableExpenses);
-    m_db->assignCategoriesTable(ui.tableCategories);
+    //m_db->assignCategoriesTable(ui.tableCategories);
+    m_db->assignCategoriesTable(ui.treeCategories);
+    m_db->assignPayeesTable(ui.tablePayees);
+    m_db->assignPayersTable(ui.tablePayers);
 }
 
 void MainWindow::on_btnAddExpense_clicked() {
@@ -51,35 +54,55 @@ void MainWindow::on_btnAddExpense_clicked() {
 }
 
 void MainWindow::on_actCategoryAdd_triggered() {
-    bool ok;
-    const QString name = QInputDialog::getText(this, tr("Add Category"),
-                                      tr("New Category:"), QLineEdit::Normal,
-                                      tr("new category name"), &ok);
-    if (ok && !name.isEmpty()) {
-        m_db->ensureCategory(name);
+    const QModelIndexList lst=ui.treeCategories->selectionModel()->selectedIndexes();
+    QString superCat="";
+    if (lst.size()==1) {
+        superCat=lst[0].data(JKHACategoriesTreeModel::SuperCategoryRole).toString();
+    }
+    if (superCat.isEmpty()) {
+        bool ok;
+        const QString name = QInputDialog::getText(this, tr("Add Category"),
+                                          tr("New Category (as 'Super Category/Category name'):"), QLineEdit::Normal,
+                                          tr("super/new_category"), &ok);
+        if (ok && !name.isEmpty()) {
+            m_db->ensureCategory(name);
+        }
+    } else {
+        bool ok;
+        const QString name = QInputDialog::getText(this, tr("Add Sub-Category"),
+                                          tr("New Sub-Category (under '%1'):").arg(superCat), QLineEdit::Normal,
+                                          tr("new category"), &ok);
+        if (ok && !name.isEmpty()) {
+            m_db->ensureCategory(superCat+"/"+name);
+        }
     }
 }
 
 void MainWindow::on_actCategoryDelete_triggered()
 {
-    QModelIndexList lst=ui.tableCategories->selectionModel()->selectedRows(0);
+    const QModelIndexList lst=ui.treeCategories->selectionModel()->selectedIndexes();
 
     if (lst.size()>0) {
-        const int ret = QMessageBox::warning(this, tr("Delete Categories"),
-                                   tr("Do you really want to delete %1 categories?")+"\n\n"+
-                                   tr("Note that deleting categories may invalidate you expenses list!"),
-                                   QMessageBox::Yes | QMessageBox::No,
-                                   QMessageBox::No);
+        QVector<int> catIDs;
+        for (auto l: lst) {
+            bool ok=false;
+            const int c=l.data(JKHACategoriesTreeModel::CategoryIDRole).toInt(&ok);
+            qDebug()<<l.data().toString()<<", c="<<c<<", ok="<<ok;
+            if (ok && c>=0) catIDs.push_back(c);
+        }
+        if (catIDs.size()>0) {
+            const int ret = QMessageBox::warning(this, tr("Delete Categories"),
+                                       tr("Do you really want to delete %1 categories?").arg(catIDs.size())+"\n\n"+
+                                       tr("Note that deleting categories may invalidate you expenses list!"),
+                                       QMessageBox::Yes | QMessageBox::No,
+                                       QMessageBox::No);
 
-        if (ret==QMessageBox::Yes) {
-            QVector<int> catIDs;
-            for (auto l: lst) {
-                catIDs.push_back(l.data().toInt());
-            }
-            for (auto c: catIDs) {
-                m_db->removeCategory(c);
-            }
+            if (ret==QMessageBox::Yes) {
+                for (auto c: catIDs) {
+                    m_db->removeCategory(c);
+                }
 
+            }
         }
     }
 }

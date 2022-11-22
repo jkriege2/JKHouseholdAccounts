@@ -22,66 +22,72 @@
 #include "jkcpptools.h"
 #include "jkhamoneydelegate.h"
 #include "jkhabudgettypedelegate.h"
+#include <QTreeView>
 
 
 JKHADatabase::JKHADatabase(QObject *parent):
-    QObject(parent), m_overviewModel(nullptr), m_categoriesModel(nullptr)
+    QObject(parent)
 {
 }
 
 JKHADatabase::~JKHADatabase()
 {
-    delete m_overviewModel;
-    m_overviewModel=nullptr;
-    delete m_categoriesModel;
-    m_categoriesModel=nullptr;
-    delete m_payeeModel;
-    m_payeeModel=nullptr;
-    delete m_payerModel;
-    m_payerModel=nullptr;
-    delete m_budgetsModel;
-    m_budgetsModel=nullptr;
-    delete m_recurringExpensesModel;
-    m_recurringExpensesModel=nullptr;
-    delete m_valueablesModel;
-    m_valueablesModel=nullptr;
+    m_overviewModel.reset(nullptr);
+    m_categoriesModel.reset(nullptr);
+    m_categoriesTreeModel.reset(nullptr);
+    m_payeeModel.reset(nullptr);
+    m_payerModel.reset(nullptr);
+    m_budgetsModel.reset(nullptr);
+    m_recurringExpensesModel.reset(nullptr);
+    m_valueablesModel.reset(nullptr);
     m_db.commit();
     m_db.close();
 }
 
 void JKHADatabase::assignOverviewTable(QAbstractItemView *view)
 {
-    view->setModel(m_overviewModel);
+    view->setModel(m_overviewModel.get());
     view->setItemDelegate(new QSqlRelationalDelegate(view));
     view->setItemDelegateForColumn(4, new JKHAMoneyDelegate(this, view, true));
 }
 
 QSqlRelationalTableModel *JKHADatabase::getOverviewModel()
 {
-    return m_overviewModel;
+    return m_overviewModel.get();
 }
 
 void JKHADatabase::assignCategoriesTable(QAbstractItemView *view)
 {
-    view->setModel(m_categoriesModel);
+    QTreeView* tv=dynamic_cast<QTreeView*>(view);
+    if (tv) {
+        tv->setModel(m_categoriesTreeModel.get());
+        tv->expandAll();
+    } else {
+        view->setModel(m_categoriesModel.get());
+    }
     //view->setItemDelegate(new QSqlRelationalDelegate(view));
-    view->setItemDelegateForColumn(2, new JKHAMoneyDelegate(this, view, false));
-    view->setItemDelegateForColumn(3, new JKHABudgetTypeDelegate(this, view));
+    //view->setItemDelegateForColumn(2, new JKHAMoneyDelegate(this, view, false));
+    //view->setItemDelegateForColumn(3, new JKHABudgetTypeDelegate(this, view));
 }
 
 void JKHADatabase::assignPayersTable(QAbstractItemView *view)
 {
-    view->setModel(m_payerModel);
+    view->setModel(m_payerModel.get());
 }
 
 void JKHADatabase::assignPayeesTable(QAbstractItemView *view)
 {
-    view->setModel(m_payeeModel);
+    view->setModel(m_payeeModel.get());
 }
 
 QSqlTableModel *JKHADatabase::getCategoriesModel()
 {
-    return m_categoriesModel;
+    return m_categoriesModel.get();
+}
+
+JKHACategoriesTreeModel *JKHADatabase::getCategoriesTreeModel()
+{
+    return m_categoriesTreeModel.get();
 }
 
 void JKHADatabase::createNew(const QString &filename)
@@ -90,7 +96,7 @@ void JKHADatabase::createNew(const QString &filename)
     QFileInfo fn(filename);
     fn.makeAbsolute();
     QString absFN=fn.absoluteFilePath();
-    bool dbexists=QFile::exists(absFN);
+    const bool dbexists=QFile::exists(absFN);
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     qDebug()<<absFN;
     qDebug()<<QDir::toNativeSeparators(absFN);
@@ -101,84 +107,41 @@ void JKHADatabase::createNew(const QString &filename)
 
     QSqlQuery query(m_db);
     if (!dbexists) {
-        query.exec("CREATE TABLE settings ("
-                     "  key VARCHAR(100) PRIMARY KEY NOT NULL"
-                     ", value VARCHAR(200)"
-                     ", type VARCHAR(200)"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE expenses ("
-                       "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                       ", date DATE"
-                       ", idPayee INT NOT NULL"
-                       ", idPayer INT NOT NULL"
-                       ", amount MONEY"
-                       ", idCategory INT NOT NULL"
-                       ", description VARCHAR(200)"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE recurringExpenses ("
-                       "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                       ", dateStart DATE"
-                       ", repeatMode INTEGER"
-                       ", lastExecutedDate DATE"
-                       ", idPayee INT NOT NULL"
-                       ", idPayer INT NOT NULL"
-                       ", amount MONEY"
-                       ", idCategory INT NOT NULL"
-                       ", description VARCHAR(200)"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE valueables ("
-                       "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                       ", name VARCHAR(200)"
-                       ", value MONEY"
-                       ", category VARCHAR(200)"
-                       ", idPayer INT NOT NULL"
-                       ", description VARCHAR(200)"
-                       ", dateAdded DATE"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE categories ("
-                     "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                     ", name VARCHAR(200) NOT NULL"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE payers ("
-                     "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                     ", name VARCHAR(200) NOT NULL"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE payees ("
-                     "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                     ", name VARCHAR(200) NOT NULL"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE budgets ("
-                     "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                     ", dateAdded DATE"
-                     ", name VARCHAR(200)"
-                     ", description VARCHAR(200)"
-                   ")");
-        debugLogQueryResult(query, "createNew");
-        query.exec("CREATE TABLE budgetEntries ("
-                     "  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
-                     ", idBudget INT NOT NULL"
-                     ", idCategory INT NOT NULL"
-                     ", budget MONEY"
-                     ", budgetType INTEGER"
-                   ")");
-        debugLogQueryResult(query, "createNew");
+        QFile fSQL(":/JKHouseholdAccounts/sql/create_tables.sql");
+        if (fSQL.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            for (const auto& sql: QString(fSQL.readAll()).split("----####----")) {
+                query.exec(sql);
+                debugLogQueryResult(query, "createNew");
+            }
+        } else {
+            throw std::runtime_error("unable to load SQL-file "+fSQL.fileName().toStdString());
+        }
 
-        setDBProperty("CURRENCY", "EUR");
-        addExpense(QDate(2018, 12, 23), "REWE", "JAN", 49.99, "Haushalt/Lebensmittel", "Weihnachtseinkauf");
-        addExpense(QDate(2018, 12, 31), "REWE", "JAN", 17.85, "Haushalt/Lebensmittel", "Silvestereinkauf");
-        addExpense(QDate(2018, 12, 31), "REWE", "Tabea", 23, "Haushalt/Lebensmittel", "Silvestereinkauf");
-        addExpense(QDate(2018, 12, 31), "DM", "JAN",9.22, "Haushalt/Drogerie", "");
-        addExpense(QDate(2018, 12, 12), "Photoladen", "JAN",539, "Hobby/Photographie", "Weihnachtsgeschenk");
     }
 
     createModels();
+
+
+    if (!dbexists) {
+        // finally add some test data (if we create a new table!)
+        setDBProperty("CURRENCY", "EUR");
+        addExpense(QDate(2018, 12, 1), "HDM", "JAN", 3300, "Einnahmen/Gehalt", "");
+        addExpense(QDate(2018, 12, 2), "Finanzamt", "Tabea", 237, "Einnahmen/Kindergelt", "");
+        addExpense(QDate(2018, 12, 2), "Blub", "Tabea", 3400, "Einnahmen/Gehalt", "");
+        addExpense(QDate(2018, 12, 23), "REWE", "JAN", -49.99, "Haushalt/Lebensmittel", "Weihnachtseinkauf");
+        addExpense(QDate(2018, 12, 31), "REWE", "JAN", -17.85, "Haushalt/Lebensmittel", "Silvestereinkauf");
+        addExpense(QDate(2018, 12, 31), "REWE", "Tabea", -23, "Haushalt/Lebensmittel", "Silvestereinkauf");
+        addExpense(QDate(2018, 12, 31), "DM", "JAN",-9.22, "Haushalt/Drogerie", "");
+        addExpense(QDate(2018, 12, 12), "Photoladen", "JAN",-539, "Hobby/Photographie", "Weihnachtsgeschenk");
+        addExpense(QDate(2018, 12, 21), "REWE", "Tabea", -56, "Haushalt/Lebensmittel", "");
+        addExpense(QDate(2018, 12, 2), "Debeka", "Jan", -40, "Versicherungen/PKV", "");
+        addExpense(QDate(2018, 12, 2), "Barmenia", "Jan", -28, "Versicherungen/Hausrat", "");
+        addExpense(QDate(2018, 12, 2), "Debeka", "Jan", -38, "Anlagen/Bauspar", "");
+        addExpense(QDate(2018, 12, 2), "Bioladen", "Tabea", -108.45, "Haushalt/Lebensmittel", "");
+        addExpense(QDate(2018, 12, 3), "Metzger", "Jan", -24.35, "Haushalt/Lebensmittel", "");
+        addExpense(QDate(2018, 12, 3), "DM", "Jan", -105.34, "Haushalt/Drogerie", "");
+        addExpense(QDate(2018, 12, 15), "Apotheke", "Jan", -10, "Gesundheit/Apotheke", "");
+    }
 }
 
 void JKHADatabase::addExpense(const QDate &date, const QString &payee, const QString &payer, double amount, const QString &category, const QString &description, bool autorefresh)
@@ -186,17 +149,27 @@ void JKHADatabase::addExpense(const QDate &date, const QString &payee, const QSt
     int rcategory=ensureCategory(category);
     int rpayee=ensurePayee(payee);
     int rpayer=ensurePayer(payer);
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO expenses (id, date, amount, idPayee, idPayer, idCategory, description)"
-                  " VALUES (null, :date, :amount, :payee, :payer, :category, :description)");
-    query.bindValue(":date", date);
-    query.bindValue(":amount", amount);
-    query.bindValue(":payee", rpayee);
-    query.bindValue(":payer", rpayer);
-    query.bindValue(":category", rcategory);
-    query.bindValue(":description", description);
-    query.exec();
-    debugLogQueryResult(query, "addExpense");
+    {
+        QSqlQuery query(m_db);
+        query.prepare("INSERT INTO expenses (id, date, amount, idPayee, idPayer, idCategory, description)"
+                      " VALUES (null, :date, :amount, :payee, :payer, :category, :description)");
+        query.bindValue(":date", date);
+        query.bindValue(":amount", amount);
+        query.bindValue(":payee", rpayee);
+        query.bindValue(":payer", rpayer);
+        query.bindValue(":category", rcategory);
+        query.bindValue(":description", description);
+        query.exec();
+        debugLogQueryResult(query, "addExpense");
+    }
+    {
+        QSqlQuery query(m_db);
+        query.prepare("UPDATE payees SET recentCategoryID = :category WHERE id = :payee;");
+        query.bindValue(":payee", rpayee);
+        query.bindValue(":category", rcategory);
+        query.exec();
+        debugLogQueryResult(query, "addExpense");
+    }
     if (autorefresh) refreshModels();
 }
 
@@ -209,7 +182,7 @@ QStringList JKHADatabase::getCategories() const
 {
     QStringList cats;
     QSqlQuery query(m_db);
-    query.exec(QString("SELECT name FROM categories"));
+    query.exec(QString("SELECT fullCat FROM categories ORDER BY fullCat"));
     auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "getCategories"));
     if (query.isActive() && query.next()) {
         bool ok=query.first();
@@ -221,25 +194,110 @@ QStringList JKHADatabase::getCategories() const
     return cats;
 }
 
+QStringList JKHADatabase::getSuperCategories() const
+{
+    QStringList cats;
+    QSqlQuery query(m_db);
+    query.exec(QString("SELECT DISTINCT superCat FROM categories ORDER BY superCat"));
+    auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "getSuperCategories"));
+    if (query.isActive() && query.next()) {
+        bool ok=query.first();
+        while (ok) {
+            cats<<query.value(0).toString();
+            ok=query.next();
+        }
+    }
+    return cats;
+}
+
+QStringList JKHADatabase::getSubCategories(const QString &superCat, QList<int>* ids) const
+{
+    QStringList cats;
+    QSqlQuery query(m_db);
+    query.exec(QString("SELECT name,id FROM categories WHERE superCat=='%1' ORDER BY fullCat").arg(superCat));
+    auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "getSubCategories"));
+    if (query.isActive() && query.next()) {
+        bool ok=query.first();
+        while (ok) {
+            cats<<query.value(0).toString();
+            if (ids) ids->append(query.value(1).toInt());
+            ok=query.next();
+        }
+    }
+    return cats;
+}
+
+QList<int> JKHADatabase::getSubCategoryIDs(const QString &superCat) const
+{
+    QList<int> catIDs;
+    QSqlQuery query(m_db);
+    query.exec(QString("SELECT id FROM categories WHERE superCat=='%1'").arg(superCat));
+    auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "getSubCategoryIDs"));
+    if (query.isActive() && query.next()) {
+        bool ok=query.first();
+        while (ok) {
+            catIDs<<query.value(0).toInt();
+            ok=query.next();
+        }
+    }
+    return catIDs;
+}
+
+QPair<QString, QString> JKHADatabase::splitFullCategory(const QString &name) const
+{
+    const QStringList cats=name.split("/");
+    const QString super_cat=(cats.size()>=2)?cats[0]:"";
+    const QString cat=cats.value(1, (cats.value(0, "")));
+    return {super_cat,cat};
+}
+
+int JKHADatabase::getCategoryID(const QString &cat) const
+{
+    int id=-1;
+    hasCategory(cat, &id);
+    return id;
+}
+
+QString JKHADatabase::getCategoryFullName(int cat) const
+{
+    QSqlQuery query(m_db);
+    query.exec(QString("SELECT fullCat from categories WHERE id==%1").arg(cat));
+    auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "getCategoryFullName"));
+    if (query.isActive() && query.next()) {
+        return query.value(0).toString();
+    }
+    return "";
+
+}
 
 int JKHADatabase::ensureCategory(const QString &name)
 {
     int id=-1;
     if (hasCategory(name, &id)) return id;
+
+    const auto splitCat=splitFullCategory(name);
+    const QString super_cat=splitCat.first;
+    const QString cat=splitCat.second;
+
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO categories (id, name) VALUES (null, :name)");
-    query.bindValue(":name", name);
+    query.prepare("INSERT INTO categories (id, superCat, name) VALUES (null, :super, :cat)");
+    query.bindValue(":super", super_cat);
+    query.bindValue(":cat", cat);
     query.exec();
     auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "ensureCategory"));
+
     refreshCategoriesModel();
     if (hasCategory(name, &id)) return id;
     throw std::runtime_error("unable to add category");
 }
 
-bool JKHADatabase::hasCategory(const QString &name, int *id) const
+bool JKHADatabase::hasCategory(const QString &name, int* id) const
 {
     QSqlQuery query(m_db);
-    query.exec(QString("SELECT id FROM categories WHERE name=='%1'").arg(name));
+    const QStringList cats=name.split("/");
+    const QString super_cat=(cats.size()>=2)?cats[0]:"";
+    const QString cat=cats.value(1, (cats.value(0, "")));
+    query.exec(QString("SELECT id from categories WHERE superCat=='%1' and name=='%2'").arg(super_cat).arg(cat));
     auto finalyact=jkfinally(std::bind(&debugLogQueryResult, query, "hasCategory"));
     if (query.isActive() && query.next()) {
         bool ok=true;
@@ -247,6 +305,7 @@ bool JKHADatabase::hasCategory(const QString &name, int *id) const
         if (id) qDebug()<<"*id="<<*id;
         qDebug()<<"value: "<< query.value(0);
         qDebug()<<"ok:    "<<ok;
+
         return ok;
     }
     return false;
@@ -284,7 +343,7 @@ int JKHADatabase::ensurePayee(const QString &name)
     int id=-1;
     if (hasPayee(name, &id)) return id;
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO payees (id, name) VALUES (null, :name)");
+    query.prepare("INSERT INTO payees (id, name, recentCategoryID) VALUES (null, :name, null)");
     query.bindValue(":name", name);
     query.exec();
     debugLogQueryResult(query, "ensurePayee");
@@ -406,7 +465,11 @@ int JKHADatabase::getDBPropertyInt(const QString &property, int defaultVal) cons
 {
     const QVariant v=getDBProperty(property);
     bool ok=false;
+#if (QT_VERSION>=QT_VERSION_CHECK(6, 0, 0))
+    if (v.typeId()==QMetaType::Int) {
+#else
     if (v.type()==QVariant::Int) {
+#endif
         auto vv=v.toInt(&ok);
         if (ok) return vv;
     }
@@ -416,7 +479,11 @@ int JKHADatabase::getDBPropertyInt(const QString &property, int defaultVal) cons
 bool JKHADatabase::getDBPropertyBool(const QString &property, bool defaultVal) const
 {
     const QVariant v=getDBProperty(property);
+#if (QT_VERSION>=QT_VERSION_CHECK(6, 0, 0))
+    if (v.typeId()==QMetaType::Bool) {
+#else
     if (v.type()==QVariant::Bool) {
+#endif
         return v.toBool();
     }
     return defaultVal;
@@ -426,7 +493,11 @@ double JKHADatabase::getDBPropertyDouble(const QString &property, double default
 {
     const QVariant v=getDBProperty(property);
     bool ok=false;
+#if (QT_VERSION>=QT_VERSION_CHECK(6, 0, 0))
+    if (v.typeId()==QMetaType::Double) {
+#else
     if (v.type()==QVariant::Double) {
+#endif
         auto vv=v.toDouble(&ok);
         if (ok) return vv;
     }
@@ -436,7 +507,11 @@ double JKHADatabase::getDBPropertyDouble(const QString &property, double default
 QString JKHADatabase::getDBPropertyString(const QString &property, const QString &defaultVal) const
 {
     const QVariant v=getDBProperty(property);
+#if (QT_VERSION>=QT_VERSION_CHECK(6, 0, 0))
+    if (v.typeId()==QMetaType::QString) {
+#else
     if (v.type()==QVariant::String) {
+#endif
         return v.toString();
     }
     return defaultVal;
@@ -473,6 +548,21 @@ void JKHADatabase::setDBProperty(const QString &property, const QVariant &value)
     query.prepare("INSERT INTO settings (key, value, type)"
                   " VALUES (:key, :value, :type)");
     query.bindValue(":key", property);
+#if (QT_VERSION>=QT_VERSION_CHECK(6, 0, 0))
+    if (value.typeId()==QMetaType::Bool) {
+        query.bindValue(":value", value.toBool());
+        query.bindValue(":type", "bool");
+    } else if (value.typeId()==QMetaType::Int) {
+        query.bindValue(":value", value.toInt());
+        query.bindValue(":type", "int");
+    } else if (value.typeId()==QMetaType::Double) {
+        query.bindValue(":value", value.toDouble());
+        query.bindValue(":type", "double");
+    } else {
+        query.bindValue(":value", value.toString());
+        query.bindValue(":type", "string");
+    }
+#else
     if (value.type()==QVariant::Bool) {
         query.bindValue(":value", value.toBool());
         query.bindValue(":type", "bool");
@@ -486,6 +576,7 @@ void JKHADatabase::setDBProperty(const QString &property, const QVariant &value)
         query.bindValue(":value", value.toString());
         query.bindValue(":type", "string");
     }
+#endif
 
     query.exec();
     debugLogQueryResult(query, "setDBProperty");
@@ -494,6 +585,7 @@ void JKHADatabase::setDBProperty(const QString &property, const QVariant &value)
 
 void JKHADatabase::refreshCategoriesModel()
 {
+    m_categoriesTreeModel->resetModel();
     auto res=m_categoriesModel->select();
     qDebug()<<"-- UPDATE QUERY refreshCategoriesModel ---";
     qDebug()<<"--   lastQuery: "<<m_categoriesModel->query().lastQuery();
@@ -577,14 +669,12 @@ void JKHADatabase::createModels()
 {
     int i;
 
-    if (m_overviewModel) delete m_overviewModel;
-
-    m_overviewModel=new QSqlRelationalTableModel(this, m_db);
+    m_overviewModel.reset(new QSqlRelationalTableModel(this, m_db));
 
     m_overviewModel->setTable("expenses");
     m_overviewModel->setRelation(2, QSqlRelation("payees", "id", "name"));
     m_overviewModel->setRelation(3, QSqlRelation("payers", "id", "name"));
-    m_overviewModel->setRelation(5, QSqlRelation("categories", "id", "name"));
+    m_overviewModel->setRelation(5, QSqlRelation("categories", "id", "fullCat"));
     m_overviewModel->setEditStrategy(QSqlRelationalTableModel::EditStrategy::OnRowChange);
     m_overviewModel->setSort(1, Qt::AscendingOrder);
     i=0;
@@ -598,35 +688,37 @@ void JKHADatabase::createModels()
 
 
 
-    if (m_categoriesModel) delete m_categoriesModel;
-
-    m_categoriesModel=new QSqlTableModel(this, m_db);
+        m_categoriesModel.reset(new QSqlTableModel(this, m_db));
 
     m_categoriesModel->setTable("categories");
     m_categoriesModel->setEditStrategy(QSqlTableModel::EditStrategy::OnRowChange);
     m_categoriesModel->setSort(1, Qt::AscendingOrder);
+    m_categoriesModel->setSort(2, Qt::AscendingOrder);
     i=0;
     m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("ID")); i++;
-    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Category Name")); i++;
+    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Super Category")); i++;
+    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Sub Category")); i++;
+    m_categoriesModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Full Category")); i++;
 
 
 
-    if (m_payeeModel) delete m_payeeModel;
+    m_categoriesTreeModel.reset(new JKHACategoriesTreeModel(this, this));
 
-    m_payeeModel=new QSqlTableModel(this, m_db);
 
+
+    m_payeeModel.reset(new QSqlRelationalTableModel(this, m_db));
     m_payeeModel->setTable("payees");
+    m_payeeModel->setRelation(2, QSqlRelation("categories", "id", "fullCat"));
     m_payeeModel->setEditStrategy(QSqlTableModel::EditStrategy::OnRowChange);
     m_payeeModel->setSort(1, Qt::AscendingOrder);
     i=0;
     m_payeeModel->setHeaderData(i, Qt::Horizontal, QObject::tr("ID")); i++;
     m_payeeModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Payee Name")); i++;
+    m_payeeModel->setHeaderData(i, Qt::Horizontal, QObject::tr("Recent Category")); i++;
 
 
 
-    if (m_payerModel) delete m_payerModel;
-
-    m_payerModel=new QSqlTableModel(this, m_db);
+    m_payerModel.reset(new QSqlTableModel(this, m_db));
 
     m_payerModel->setTable("payers");
     m_payerModel->setEditStrategy(QSqlTableModel::EditStrategy::OnRowChange);
@@ -637,9 +729,7 @@ void JKHADatabase::createModels()
 
 
 
-    if (m_budgetsModel) delete m_budgetsModel;
-
-    m_budgetsModel=new QSqlTableModel(this, m_db);
+    m_budgetsModel.reset(new QSqlTableModel(this, m_db));
 
     m_budgetsModel->setTable("budgets");
     m_budgetsModel->setEditStrategy(QSqlTableModel::EditStrategy::OnRowChange);
@@ -652,9 +742,7 @@ void JKHADatabase::createModels()
 
 
 
-    if (m_recurringExpensesModel) delete m_recurringExpensesModel;
-
-    m_recurringExpensesModel=new QSqlRelationalTableModel(this, m_db);
+    m_recurringExpensesModel.reset(new QSqlRelationalTableModel(this, m_db));
 
     m_recurringExpensesModel->setTable("recurringExpenses");
     m_recurringExpensesModel->setRelation(4, QSqlRelation("payees", "id", "name"));
@@ -675,11 +763,9 @@ void JKHADatabase::createModels()
 
 
 
-    if (m_valueablesModel) delete m_valueablesModel;
+    m_valueablesModel.reset(new QSqlRelationalTableModel(this, m_db));
 
-    m_valueablesModel=new QSqlRelationalTableModel(this, m_db);
-
-    m_valueablesModel->setTable("valuables");
+    m_valueablesModel->setTable("valueables");
     m_valueablesModel->setRelation(6, QSqlRelation("payers", "id", "name"));
     m_valueablesModel->setEditStrategy(QSqlTableModel::EditStrategy::OnRowChange);
     m_valueablesModel->setSort(1, Qt::AscendingOrder);

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/JKHouseholdAccounts/sql">
+        <file>create_tables.sql</file>
+    </qresource>
+</RCC>

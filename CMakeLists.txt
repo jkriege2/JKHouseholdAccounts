@@ -15,11 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.20)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
-# append path to local cmake modules
+# set search path for CMake files
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+# Find includes in the build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Default configuration values. These must be before the project command or
 # they won't work in Windows.
@@ -59,26 +62,23 @@ endif()
 # Global CMake options
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 # Configure Qt
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5PrintSupport REQUIRED)
-find_package(Qt5Sql REQUIRED)
-find_package(Qt5LinguistTools REQUIRED)
-#find_package(Qt5Test REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Sql PrintSupport LinguistTools REQUIRED)
+#if(${QT_VERSION_MAJOR} VERSION_GREATER_EQUAL "6")
+#    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS OpenGLWidgets)
+#endif()
+
 # Retrieve the absolute path to qmake and then use that path to find
 # the binaries
-get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+get_target_property(_qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
-
-# Testing configuration
-#enable_testing()
-#set(TEST_LINK_LIBRARIES Qt5::Test)
 
 add_subdirectory(source)
 

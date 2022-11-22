@@ -27,6 +27,8 @@
 #include <QSqlRelationalTableModel>
 #include <QSqlRelationalDelegate>
 #include <QStringList>
+#include <memory>
+#include "jkhacategoriestreemodel.h"
 
 enum class JKHABudgetType {
     Monthly=0,
@@ -80,14 +82,28 @@ public:
     QString getCurrency() const;
 
 
+    /** \brief returns all super-categories */
+    QStringList getSuperCategories() const;
+    /** \brief returns the sub-categories for a given super-category \a superCat from the current database */
+    QStringList getSubCategories(const QString& superCat, QList<int> *ids=nullptr) const;
+    /** \brief returns the sub-category IDs for a given super-category \a superCat from the current database */
+    QList<int> getSubCategoryIDs(const QString& superCat) const;
     /** \brief returns the categories list from the current database */
     QStringList getCategories() const;
     /** \brief ensures existence of a category to the categories list from the current database */
     int ensureCategory(const QString& name);
     /** \brief checks whether a category exists in the categories list from the current database */
-    bool hasCategory(const QString& name, int* id=nullptr) const;
+    bool hasCategory(const QString& name, int *id=nullptr) const;
     /** \brief removes the category with the given ID */
     void removeCategory(int id);
+    /** \brief returns a tree model of all catgories */
+    JKHACategoriesTreeModel *getCategoriesTreeModel();
+    /** \brief split a full category into super category and category name */
+    QPair<QString, QString> splitFullCategory(const QString& cat) const;
+    /** \brief returns the id of the given Category */
+    int getCategoryID(const QString& cat) const;
+    /** \brief returns the full name of the given Category */
+    QString getCategoryFullName(int cat) const;
 
     /** \brief returns the payers list from the current database */
     QStringList getPayers() const;
@@ -107,7 +123,6 @@ public:
 
     /** \brief refresh the datamodels, i.e. rerun the query for the models */
     void refreshModels();
-
 protected:
     /** \brief stores a property */
     void setDBProperty(const QString& property, const QVariant& value);
@@ -126,13 +141,14 @@ protected:
     QSqlTableModel *getCategoriesModel();
 
 
-    QSqlRelationalTableModel * m_overviewModel;
-    QSqlTableModel * m_categoriesModel;
-    QSqlTableModel * m_payeeModel;
-    QSqlTableModel * m_payerModel;
-    QSqlTableModel * m_budgetsModel;
-    QSqlRelationalTableModel * m_recurringExpensesModel;
-    QSqlRelationalTableModel * m_valueablesModel;
+    std::unique_ptr<QSqlRelationalTableModel>  m_overviewModel;
+    std::unique_ptr<QSqlTableModel> m_categoriesModel;
+    std::unique_ptr<QSqlRelationalTableModel> m_payeeModel;
+    std::unique_ptr<QSqlTableModel> m_payerModel;
+    std::unique_ptr<QSqlTableModel> m_budgetsModel;
+    std::unique_ptr<QSqlRelationalTableModel> m_recurringExpensesModel;
+    std::unique_ptr<QSqlRelationalTableModel> m_valueablesModel;
+    std::unique_ptr<JKHACategoriesTreeModel> m_categoriesTreeModel;
 
     QSqlDatabase m_db;
     QSqlQuery m_query;

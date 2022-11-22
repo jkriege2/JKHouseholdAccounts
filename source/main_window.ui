@@ -14,23 +14,11 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>This is an example application.</string>
-      </property>
-     </widget>
-    </item>
-    <item>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="1" column="0">
      <widget class="QTabWidget" name="mainTab">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabExpenses">
        <attribute name="title">
@@ -38,7 +26,17 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QTableView" name="tableExpenses"/>
+         <widget class="QTableView" name="tableExpenses">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QPushButton" name="btnAddExpense">
@@ -59,7 +57,7 @@
         <string>&amp;Valuables</string>
        </attribute>
       </widget>
-      <widget class="QWidget" name="tabCategories">
+      <widget class="QWidget" name="tabSettings">
        <attribute name="title">
         <string>&amp;Settings</string>
        </attribute>
@@ -69,18 +67,58 @@
           <property name="title">
            <string>Categories</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QToolBar" name="tbCategories" native="true"/>
+            <widget class="QToolBar" name="tbCategories"/>
            </item>
            <item>
-            <widget class="QTableView" name="tableCategories"/>
+            <widget class="QTreeView" name="treeCategories"/>
            </item>
           </layout>
          </widget>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QGroupBox" name="groupPayers">
+            <property name="title">
+             <string>Payers</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QTableView" name="tablePayers"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupPayees">
+            <property name="title">
+             <string>Payees</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QTableView" name="tablePayees"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>This is an example application.</string>
+      </property>
      </widget>
     </item>
    </layout>
@@ -91,7 +129,7 @@
      <x>0</x>
      <y>0</y>
      <width>530</width>
-     <height>21</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -13,6 +13,7 @@ DlgAccountAddExpense::DlgAccountAddExpense(JKHADatabase* db, QWidget *parent) :
     ui->cmbPayee->addItems(m_db->getPayees());
     ui->cmbPayer->addItems(m_db->getPayers());
     ui->cmbCategory->addItems(m_db->getCategories());
+    //ui->cmbCategory->setDatabase(m_db);
     ui->cmbPayee->setCurrentText("");
     ui->cmbCategory->setCurrentText("");
     ui->cmbDir->setCurrentIndex(0);
@@ -46,6 +47,7 @@ void DlgAccountAddExpense::on_cmbDir_currentIndexChanged(int index)
         ui->spinAmount->setStyleSheet("color: rgb(0, 85, 0);");
     }
 }
+
 
 void DlgAccountAddExpense::showMore(bool show)
 {

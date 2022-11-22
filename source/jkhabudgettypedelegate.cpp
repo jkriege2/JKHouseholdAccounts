@@ -23,7 +23,6 @@ QWidget *JKHABudgetTypeDelegate::createEditor(QWidget *parent,
     editor->setFrame(false);
     editor->addItem(JKHABudgetType2LocalString(static_cast<JKHABudgetType>(0)));
     editor->addItem(JKHABudgetType2LocalString(static_cast<JKHABudgetType>(1)));
-
     return editor;
 }
 

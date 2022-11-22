@@ -4,52 +4,52 @@
 <context>
     <name>DlgAccountAddExpense</name>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="14"/>
+        <location filename="../dlgaccountaddexpense.ui" line="14"/>
         <source>Add Expense ...</source>
         <translation>Ausgabe hinzufügen</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="23"/>
+        <location filename="../dlgaccountaddexpense.ui" line="23"/>
         <source>Date:</source>
         <translation>Datum:</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="50"/>
+        <location filename="../dlgaccountaddexpense.ui" line="60"/>
         <source>Amount:</source>
         <translation>Betrag:</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="72"/>
+        <location filename="../dlgaccountaddexpense.ui" line="82"/>
         <source>€</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="96"/>
+        <location filename="../dlgaccountaddexpense.ui" line="106"/>
         <source>Expense (-)</source>
         <translation>Ausgabe (-)</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="101"/>
+        <location filename="../dlgaccountaddexpense.ui" line="111"/>
         <source>Income (+)</source>
         <translation>Einkommen (+)</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="124"/>
+        <location filename="../dlgaccountaddexpense.ui" line="134"/>
         <source>Payee:</source>
         <translation>Zahlungsempfänger:</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="138"/>
+        <location filename="../dlgaccountaddexpense.ui" line="148"/>
         <source>Payer:</source>
         <translation>Zahler:</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="152"/>
+        <location filename="../dlgaccountaddexpense.ui" line="162"/>
         <source>Category:</source>
         <translation>Kategorie:</translation>
     </message>
     <message>
-        <location filename="../source/dlgaccountaddexpense.ui" line="166"/>
+        <location filename="../dlgaccountaddexpense.ui" line="176"/>
         <source>Description:</source>
         <translation>Beschreibung:</translation>
     </message>
@@ -66,14 +66,22 @@
     </message>
 </context>
 <context>
+    <name>JKHACategoriesTreeModel</name>
+    <message>
+        <location filename="../jkhacategoriestreemodel.cpp" line="69"/>
+        <source>Category</source>
+        <translation type="unfinished">Kategorie</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
-        <location filename="../source/main_window.ui" line="14"/>
+        <location filename="../main_window.ui" line="14"/>
         <source>MainWindow</source>
         <translation>Hauptfenster</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="26"/>
+        <location filename="../main_window.ui" line="120"/>
         <source>This is an example application.</source>
         <translation>Dies ist eine Beispielanwendung</translation>
     </message>
@@ -82,69 +90,79 @@
         <translation type="vanished">Umsätze</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="46"/>
+        <location filename="../main_window.ui" line="44"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="70"/>
+        <location filename="../main_window.ui" line="68"/>
         <source>Categories</source>
         <translation>Kategorien</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="99"/>
+        <location filename="../main_window.ui" line="137"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="64"/>
-        <location filename="../source/main_window.ui" line="105"/>
+        <location filename="../main_window.ui" line="62"/>
+        <location filename="../main_window.ui" line="143"/>
         <source>&amp;Settings</source>
         <translation>&amp;Einstellungen</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="37"/>
+        <location filename="../main_window.ui" line="25"/>
         <source>&amp;Expenses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="54"/>
+        <location filename="../main_window.ui" line="52"/>
         <source>&amp;Budget</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="59"/>
+        <location filename="../main_window.ui" line="57"/>
         <source>&amp;Valuables</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="109"/>
+        <location filename="../main_window.ui" line="85"/>
+        <source>Payers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_window.ui" line="97"/>
+        <source>Payees</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_window.ui" line="147"/>
         <source>&amp;Language</source>
         <translation>&amp;Sprache</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="122"/>
+        <location filename="../main_window.ui" line="160"/>
         <source>E&amp;xit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="125"/>
+        <location filename="../main_window.ui" line="163"/>
         <source>Ctrl+Q</source>
         <translation>Strg+F4</translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="140"/>
-        <location filename="../source/main_window.cpp" line="55"/>
+        <location filename="../main_window.ui" line="178"/>
+        <location filename="../main_window.cpp" line="64"/>
         <source>Add Category</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="145"/>
+        <location filename="../main_window.ui" line="183"/>
         <source>Remove Category</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.ui" line="148"/>
+        <location filename="../main_window.ui" line="186"/>
         <source>Delete Selected Category/Categories</source>
         <translation type="unfinished"></translation>
     </message>
@@ -157,27 +175,42 @@
         <translation type="vanished">&amp;Deutsch</translation>
     </message>
     <message>
-        <location filename="../source/main_window.cpp" line="56"/>
-        <source>New Category:</source>
+        <location filename="../main_window.cpp" line="65"/>
+        <source>New Category (as &apos;Super Category/Category name&apos;):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.cpp" line="57"/>
-        <source>new category name</source>
+        <location filename="../main_window.cpp" line="66"/>
+        <source>super/new_category</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.cpp" line="68"/>
+        <location filename="../main_window.cpp" line="72"/>
+        <source>Add Sub-Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_window.cpp" line="73"/>
+        <source>New Sub-Category (under &apos;%1&apos;):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_window.cpp" line="74"/>
+        <source>new category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_window.cpp" line="94"/>
         <source>Delete Categories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.cpp" line="69"/>
+        <location filename="../main_window.cpp" line="95"/>
         <source>Do you really want to delete %1 categories?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/main_window.cpp" line="70"/>
+        <location filename="../main_window.cpp" line="96"/>
         <source>Note that deleting categories may invalidate you expenses list!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -185,103 +218,122 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="591"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="609"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="622"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="635"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="648"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="666"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="687"/>
+        <location filename="../jkhadatabasetools.cpp" line="681"/>
+        <location filename="../jkhadatabasetools.cpp" line="698"/>
+        <location filename="../jkhadatabasetools.cpp" line="715"/>
+        <location filename="../jkhadatabasetools.cpp" line="727"/>
+        <location filename="../jkhadatabasetools.cpp" line="738"/>
+        <location filename="../jkhadatabasetools.cpp" line="754"/>
+        <location filename="../jkhadatabasetools.cpp" line="773"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="592"/>
+        <location filename="../jkhadatabasetools.cpp" line="682"/>
         <source>Date</source>
         <translation>Datum</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="593"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="670"/>
+        <location filename="../jkhadatabasetools.cpp" line="683"/>
+        <location filename="../jkhadatabasetools.cpp" line="758"/>
         <source>Payee</source>
         <translation>Zahlungsempfänger</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="594"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="671"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="693"/>
+        <location filename="../jkhadatabasetools.cpp" line="684"/>
+        <location filename="../jkhadatabasetools.cpp" line="759"/>
+        <location filename="../jkhadatabasetools.cpp" line="779"/>
         <source>Payer</source>
         <translation>Zahler</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="595"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="672"/>
+        <location filename="../jkhadatabasetools.cpp" line="685"/>
+        <location filename="../jkhadatabasetools.cpp" line="760"/>
         <source>Amount</source>
         <translation>Betrag</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="596"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="673"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="691"/>
+        <location filename="../jkhadatabasetools.cpp" line="686"/>
+        <location filename="../jkhadatabasetools.cpp" line="761"/>
+        <location filename="../jkhadatabasetools.cpp" line="777"/>
         <source>Category</source>
         <translation>Kategorie</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="597"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="651"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="674"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="692"/>
+        <location filename="../jkhadatabasetools.cpp" line="687"/>
+        <location filename="../jkhadatabasetools.cpp" line="741"/>
+        <location filename="../jkhadatabasetools.cpp" line="762"/>
+        <location filename="../jkhadatabasetools.cpp" line="778"/>
         <source>Description</source>
         <translation>Beschreibung</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="610"/>
         <source>Category Name</source>
-        <translation>Kategorien-Name</translation>
+        <translation type="vanished">Kategorien-Name</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="623"/>
+        <location filename="../jkhadatabasetools.cpp" line="699"/>
+        <source>Super Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../jkhadatabasetools.cpp" line="700"/>
+        <source>Sub Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../jkhadatabasetools.cpp" line="701"/>
+        <source>Full Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../jkhadatabasetools.cpp" line="716"/>
         <source>Payee Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="636"/>
+        <location filename="../jkhadatabasetools.cpp" line="717"/>
+        <source>Recent Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../jkhadatabasetools.cpp" line="728"/>
         <source>Payer Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="649"/>
+        <location filename="../jkhadatabasetools.cpp" line="739"/>
         <source>Added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="650"/>
-        <location filename="../source/jkhadatabasetools.cpp" line="689"/>
+        <location filename="../jkhadatabasetools.cpp" line="740"/>
+        <location filename="../jkhadatabasetools.cpp" line="775"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="667"/>
+        <location filename="../jkhadatabasetools.cpp" line="755"/>
         <source>Start Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="668"/>
+        <location filename="../jkhadatabasetools.cpp" line="756"/>
         <source>Repeat Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="669"/>
+        <location filename="../jkhadatabasetools.cpp" line="757"/>
         <source>Last Executed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="688"/>
+        <location filename="../jkhadatabasetools.cpp" line="774"/>
         <source>Added Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="690"/>
+        <location filename="../jkhadatabasetools.cpp" line="776"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -294,12 +346,12 @@
         <translation type="vanished">Budget-Typ</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="711"/>
+        <location filename="../jkhadatabasetools.cpp" line="797"/>
         <source>Monthly Budget</source>
         <translation>Monatliches Budget</translation>
     </message>
     <message>
-        <location filename="../source/jkhadatabasetools.cpp" line="712"/>
+        <location filename="../jkhadatabasetools.cpp" line="798"/>
         <source>Yearly Budget</source>
         <translation>Jährliches Budget</translation>
     </message>
